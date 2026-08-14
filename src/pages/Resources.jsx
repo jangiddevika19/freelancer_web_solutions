@@ -81,21 +81,6 @@ const RESOURCES = [
   },
 
   {
-    id: 1,
-    icon: BookOpen,
-    category: "notes",
-    tag: "NOTES",
-    title: "Core Java Quick Notes",
-    description:
-      "Simple and practical Core Java notes covering important fundamentals, OOPs and commonly used concepts.",
-    level: "Core Java",
-    format: "PDF Notes",
-    price: "₹99",
-    amount: "99",
-    featured: true,
-  },
-
-  {
     id: 2,
     icon: Database,
     category: "notes",
@@ -104,7 +89,22 @@ const RESOURCES = [
     description:
       "Quick SQL revision sheet covering important commands, queries, joins, constraints and commonly used syntax.",
     level: "SQL Revision",
-    format: "Cheat Sheet",
+    format: "8–10 Page Cheat Sheet",
+    price: "₹99",
+    amount: "99",
+    featured: true,
+  },
+
+  {
+    id: 1,
+    icon: BookOpen,
+    category: "notes",
+    tag: "NOTES",
+    title: "Core Java Quick Notes",
+    description:
+      "Quick Core Java revision notes covering Java basics, OOPs, Strings, Collections, Exception Handling and Java 8+.",
+    level: "Core Java",
+    format: "8–10 Page Quick Notes",
     price: "₹99",
     amount: "99",
     featured: true,
@@ -115,11 +115,26 @@ const RESOURCES = [
     icon: Terminal,
     category: "interview",
     tag: "INTERVIEW",
-    title: "Java Interview Questions",
+    title: "Java 50 Interview Questions",
     description:
-      "Important Core Java and OOP interview questions explained in a simple and practical way.",
+      "50 important Core Java and OOP interview questions explained in a simple and practical way.",
     level: "Interview Prep",
-    format: "Questions",
+    format: "50 Interview Questions",
+    price: "₹149",
+    amount: "149",
+    featured: true,
+  },
+
+  {
+    id: 10,
+    icon: Code2,
+    category: "interview",
+    tag: "INTERVIEW",
+    title: "React 50 Interview Questions",
+    description:
+      "50 important React interview questions covering components, JSX, props, state, hooks, routing, API integration and practical React concepts.",
+    level: "React Interview Prep",
+    format: "50 Interview Questions",
     price: "₹149",
     amount: "149",
     featured: true,
@@ -130,13 +145,28 @@ const RESOURCES = [
     icon: Database,
     category: "interview",
     tag: "INTERVIEW",
-    title: "SQL Interview Questions",
+    title: "SQL 50 Interview Questions",
     description:
-      "Frequently asked SQL interview questions covering queries, joins, constraints and database concepts.",
+      "50 frequently asked SQL interview questions covering queries, joins, constraints and database concepts.",
     level: "Interview Prep",
-    format: "Questions",
+    format: "50 Interview Questions",
     price: "₹149",
     amount: "149",
+    featured: false,
+  },
+
+  {
+    id: 6,
+    icon: BookOpen,
+    category: "notes",
+    tag: "NOTES",
+    title: "Core Java Developer Notes",
+    description:
+      "35-page practical Core Java notes covering Java fundamentals, OOPs, Collections, Exception Handling, Java 8+ and important interview concepts.",
+    level: "Core Java",
+    format: "35-Page PDF Notes",
+    price: "₹199",
+    amount: "199",
     featured: false,
   },
 
@@ -147,27 +177,12 @@ const RESOURCES = [
     tag: "ROADMAP",
     title: "Frontend Developer Roadmap",
     description:
-      "Learn HTML, CSS, JavaScript, React, Git and modern frontend development step by step.",
+      "A practical step-by-step roadmap covering HTML, CSS, JavaScript, React, APIs, Git, projects, deployment and interview preparation.",
     level: "Beginner → Job Ready",
-    format: "Roadmap",
+    format: "20–25 Page Roadmap",
     price: "₹199",
     amount: "199",
     featured: true,
-  },
-
-  {
-    id: 6,
-    icon: BookOpen,
-    category: "notes",
-    tag: "NOTES",
-    title: "Core Java Developer Notes",
-    description:
-      "Clean notes covering Java fundamentals, OOPs, Collections, Exception Handling and important concepts.",
-    level: "Core Java",
-    format: "PDF Notes",
-    price: "₹199",
-    amount: "199",
-    featured: false,
   },
 
   {
@@ -194,26 +209,27 @@ const RESOURCES = [
     description:
       "A practical collection of frontend, backend, database and project-based interview questions.",
     level: "Job Preparation",
-    format: "Question Pack",
+    format: "35–45 Page Interview Pack",
     price: "₹299",
     amount: "299",
     featured: true,
   },
 
   {
-    id: 9,
-    icon: Layers3,
-    category: "notes",
-    tag: "PACK",
-    title: "Java Full Stack Developer Pack",
-    description:
-      "A complete developer preparation bundle combining roadmaps, notes and interview resources.",
-    level: "Full Stack",
-    format: "Resource Pack",
-    price: "₹299",
-    amount: "299",
-    featured: true,
-  },
+  id: 9,
+  icon: Layers3,
+  category: "notes",
+  tag: "PREMIUM",
+  title: "Java Full Stack Developer Pack",
+  description:
+    "A complete premium developer preparation bundle combining Java, SQL, React, Spring Boot, projects and interview resources.",
+  level: "Full Stack",
+  format: "Premium Resource Pack",
+  price: "₹699",
+  amount: "699",
+  featured: true,
+  premium: true,
+},
 ];
 
 /* =========================================================
