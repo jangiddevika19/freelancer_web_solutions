@@ -37,7 +37,6 @@ const EMAILJS_PUBLIC_KEY = "_WgZhn1NzggSPGWvl";
 
 const FAMPAY_UPI_ID = "devika19@fam";
 
-
 /* =========================================================
    RESOURCE CATEGORIES
 ========================================================= */
@@ -539,15 +538,11 @@ function ResourceModal({ resource, onClose }) {
     }
 
     const upiUrl =
-      `upi://pay?pa=${encodeURIComponent(
-        FAMPAY_UPI_ID
-      )}` +
+      `upi://pay?pa=${encodeURIComponent(FAMPAY_UPI_ID)}` +
       `&pn=${encodeURIComponent("Devika Web Solutions")}` +
       `&am=${encodeURIComponent(resource.amount)}` +
       `&cu=INR` +
-      `&tn=${encodeURIComponent(
-        resource.title
-      )}`;
+      `&tn=${encodeURIComponent(resource.title)}`;
 
     window.location.href = upiUrl;
   };
@@ -596,18 +591,6 @@ function ResourceModal({ resource, onClose }) {
       return;
     }
 
-    /*
-      IMPORTANT:
-      These names exactly match your EmailJS template:
-
-      {{resource_title}}
-      {{amount}}
-      {{customer_name}}
-      {{customer_email}}
-      {{utr}}
-      {{message}}
-    */
-
     const templateParams = {
       resource_title: resource.title,
       amount: resource.price,
@@ -641,12 +624,6 @@ function ResourceModal({ resource, onClose }) {
         response.status,
         response.text
       );
-
-      /*
-        SUCCESS ONLY AFTER EMAILJS SUCCESS.
-        Clicking "I've Completed Payment" alone
-        NEVER shows success.
-      */
 
       setSubmitted(true);
     } catch (err) {
@@ -832,7 +809,8 @@ function ResourceModal({ resource, onClose }) {
 
               <p className="mt-3 text-[9px] leading-4 text-slate-400">
                 Your payment will be verified manually.
-                Access details will be shared after confirmation.
+                The PDF/resource will be shared to your
+                provided email after verification.
               </p>
 
               <button
@@ -911,6 +889,33 @@ function ResourceModal({ resource, onClose }) {
                     Confirm your payment
                   </h2>
                 </div>
+              </div>
+
+              {/* EMAIL / DELIVERY NOTICE */}
+
+              <div
+                className="
+                  mt-4
+                  rounded-xl
+                  border
+                  border-amber-100
+                  bg-amber-50/70
+                  p-3
+                "
+              >
+                <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
+                  Important before submitting
+                </p>
+
+                <p className="mt-1 text-[10px] leading-4 text-amber-800">
+                  Please provide a valid email address. Your PDF/resource
+                  will be shared to this email after successful payment
+                  verification.
+                </p>
+
+                <p className="mt-1.5 text-[10px] font-bold leading-4 text-amber-800">
+                  No refund is available after payment.
+                </p>
               </div>
 
               <div
@@ -993,7 +998,7 @@ function ResourceModal({ resource, onClose }) {
 
                 <div>
                   <label className="mb-1 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                    Email Address
+                    Valid Email Address
                   </label>
 
                   <input
@@ -1020,6 +1025,11 @@ function ResourceModal({ resource, onClose }) {
                       focus:ring-sky-50
                     "
                   />
+
+                  <p className="mt-1 text-[8px] leading-3.5 text-slate-400">
+                    Your PDF/resource will be shared to this email after
+                    payment verification. Please make sure it is correct.
+                  </p>
                 </div>
 
                 {/* UTR */}
@@ -1163,6 +1173,7 @@ function ResourceModal({ resource, onClose }) {
 
               <p className="mt-2.5 text-center text-[8px] leading-3.5 text-slate-400">
                 Please make sure your transaction ID / UTR is correct.
+                Your resource will be shared after payment verification.
               </p>
             </div>
           ) : (
@@ -1248,6 +1259,59 @@ function ResourceModal({ resource, onClose }) {
                     <span>{item}</span>
                   </div>
                 ))}
+              </div>
+
+              {/* =================================================
+                  IMPORTANT PAYMENT NOTICE
+              ================================================= */}
+
+              <div
+                className="
+                  relative
+                  mt-3
+                  rounded-xl
+                  border
+                  border-amber-100
+                  bg-amber-50/70
+                  p-3
+                "
+              >
+                <div className="flex gap-2">
+                  <div
+                    className="
+                      mt-0.5
+                      flex
+                      h-5
+                      w-5
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-amber-100
+                      text-[10px]
+                      font-black
+                      text-amber-700
+                    "
+                  >
+                    !
+                  </div>
+
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
+                      Important before payment
+                    </p>
+
+                    <p className="mt-1 text-[9px] leading-4 text-amber-800">
+                      Please make sure you have a valid email address.
+                      Your PDF/resource will be shared to the email you
+                      provide after successful payment verification.
+                    </p>
+
+                    <p className="mt-1 text-[9px] font-bold leading-4 text-amber-800">
+                      No refund is available after payment.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* PAYMENT BOX */}
@@ -1355,37 +1419,6 @@ function ResourceModal({ resource, onClose }) {
                     </span>
                   </div>
                 </div>
-
-                {/* FAMPAY BUTTON */}
-
-                {/* <button
-                  type="button"
-                  onClick={handlePayViaFampay}
-                  className="
-                    mt-2.5
-                    flex
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-lg
-                    bg-gradient-to-r
-                    from-sky-600
-                    to-blue-700
-                    px-4
-                    py-2.5
-                    text-[10px]
-                    font-bold
-                    text-white
-                    shadow-[0_8px_18px_rgba(14,165,233,0.20)]
-                    transition
-                    hover:from-sky-500
-                    hover:to-blue-600
-                  "
-                >
-                  <Smartphone className="h-3.5 w-3.5" />
-                  Pay via Fampay
-                </button> */}
               </div>
 
               {/* ERROR */}
@@ -1449,7 +1482,8 @@ function ResourceModal({ resource, onClose }) {
               </div>
 
               <p className="relative mt-2 text-center text-[8px] leading-3.5 text-slate-400">
-                After payment, submit your transaction ID / UTR for verification.
+                After payment, submit your transaction ID / UTR and a
+                valid email address for verification and delivery.
               </p>
             </>
           )}
