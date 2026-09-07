@@ -588,26 +588,6 @@ function ResourceModal({ resource, onClose }) {
       return;
     }
 
-    const templateParams = {
-      resource_title: resource.title,
-      amount: resource.price,
-
-      customer_name: customerName,
-      customer_email: customerEmail,
-
-      utr: utr,
-
-      message:
-        message ||
-        "No additional message was provided.",
-
-      subject: `New Resource Payment Received - ${resource.title}`,
-
-      reply_to: customerEmail,
-
-      website: "Devika Web Solutions",
-    };
-
     try {
       const response = await emailjs.sendForm(
         EMAILJS_SERVICE_ID,
@@ -630,7 +610,8 @@ function ResourceModal({ resource, onClose }) {
       );
 
       setError(
-        "Payment details could not be submitted. Please try again."
+        err?.text ||
+          "Payment details could not be submitted. Please try again."
       );
     } finally {
       setSending(false);
@@ -955,9 +936,14 @@ function ResourceModal({ resource, onClose }) {
               </div>
 
               <form
+                id="resource-payment-form"
                 onSubmit={handleSubmitConfirmation}
+                encType="multipart/form-data"
                 className="mt-4 space-y-2.5"
               >
+                <input type="hidden" name="resource_title" value={resource.title} />
+                <input type="hidden" name="amount" value={resource.price} />
+                <input type="hidden" name="subject" value={`New Resource Payment Received - ${resource.title}`} />
                 {/* NAME */}
 
                 <div>
