@@ -497,6 +497,7 @@ function ResourceCard({ resource, onExplore }) {
 
 function ResourceModal({ resource, onClose }) {
   const [paymentStep, setPaymentStep] = useState("payment");
+  const [paymentScreenshotName, setPaymentScreenshotName] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
@@ -565,10 +566,24 @@ function ResourceModal({ resource, onClose }) {
     const message =
       String(formData.get("message") || "").trim();
 
-    if (!customerName || !customerEmail || !utr) {
+    const paymentScreenshot = formData.get("payment_screenshot");
+
+    if (!customerName || !customerEmail || !utr || !(paymentScreenshot instanceof File) || paymentScreenshot.size === 0) {
       setError(
-        "Please enter your name, email address and transaction ID / UTR."
+        "Please enter your name, email, transaction ID / UTR and upload the payment screenshot."
       );
+      setSending(false);
+      return;
+    }
+
+    if (!paymentScreenshot.type.startsWith("image/")) {
+      setError("Please upload a valid payment screenshot image.");
+      setSending(false);
+      return;
+    }
+
+    if (paymentScreenshot.size > 5 * 1024 * 1024) {
+      setError("Payment screenshot must be 5MB or smaller.");
       setSending(false);
       return;
     }
@@ -594,10 +609,10 @@ function ResourceModal({ resource, onClose }) {
     };
 
     try {
-      const response = await emailjs.send(
+      const response = await emailjs.sendForm(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
-        templateParams,
+        form,
         EMAILJS_PUBLIC_KEY
       );
 
@@ -1045,6 +1060,64 @@ function ResourceModal({ resource, onClose }) {
                       focus:ring-sky-50
                     "
                   />
+                </div>
+
+                {/* PAYMENT SCREENSHOT */}
+
+                <div>
+                  <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    Payment Screenshot <span className="text-sky-500">*</span>
+                  </label>
+
+                  <label
+                    htmlFor="payment-screenshot-upload"
+                    className="group block cursor-pointer rounded-2xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-sky-50/70 p-3 shadow-[0_10px_30px_rgba(15,23,42,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-[0_14px_35px_rgba(14,165,233,0.12)]"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-600 transition-all group-hover:scale-105 group-hover:bg-sky-600 group-hover:text-white">
+                        <FileText className="h-5 w-5" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-bold text-slate-800">
+                          {paymentScreenshotName ? "Screenshot selected" : "Upload payment screenshot"}
+                        </p>
+                        <p className="mt-0.5 truncate text-[9px] text-slate-400">
+                          {paymentScreenshotName || "JPG, PNG or WEBP · Maximum 5MB"}
+                        </p>
+                      </div>
+
+                      <span className="shrink-0 rounded-lg bg-slate-950 px-3 py-2 text-[9px] font-bold text-white shadow-sm transition-all group-hover:bg-sky-600">
+                        {paymentScreenshotName ? "Change" : "Choose File"}
+                      </span>
+                    </div>
+
+                    {paymentScreenshotName && (
+                      <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-2">
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                        <span className="min-w-0 truncate text-[9px] font-semibold text-emerald-700">
+                          {paymentScreenshotName}
+                        </span>
+                      </div>
+                    )}
+                  </label>
+
+                  <input
+                    id="payment-screenshot-upload"
+                    name="payment_screenshot"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    required
+                    className="sr-only"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      setPaymentScreenshotName(file ? file.name : "");
+                    }}
+                  />
+
+                  <p className="mt-1.5 text-[8px] leading-3.5 text-slate-400">
+                    Upload the payment confirmation screenshot so we can verify your transaction.
+                  </p>
                 </div>
 
                 {/* MESSAGE */}
