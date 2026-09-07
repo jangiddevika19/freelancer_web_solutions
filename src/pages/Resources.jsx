@@ -1226,6 +1226,21 @@ function ResourceModal({ resource, onClose }) {
                 </button>
               </form>
 
+            <div className="mt-4 rounded-xl border border-sky-100 bg-sky-50/60 px-3 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-sky-700">
+                Payment Verification & Delivery
+              </p>
+              <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                Your payment will be manually verified. Once your payment is confirmed,
+                your purchased resource will be delivered to your registered email
+                <span className="font-bold text-slate-700"> within 24 hours.</span>
+              </p>
+            </div>
+
+            <div className="mt-2 text-center text-[8px] font-semibold text-slate-400">
+              🔒 Secure Manual Verification · 📩 Delivery within 24 hours
+            </div>
+
               <p className="mt-2.5 text-center text-[8px] leading-3.5 text-slate-400">
                 Please make sure your transaction ID / UTR is correct.
                 Your resource will be shared after payment verification.
