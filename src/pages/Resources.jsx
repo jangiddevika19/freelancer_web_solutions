@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import emailjs from "@emailjs/browser";
 
@@ -38,6 +38,56 @@ const EMAILJS_PUBLIC_KEY = "_WgZhn1NzggSPGWvl";
 const FAMPAY_UPI_ID = "devika19@fam";
 
 /* =========================================================
+   PAYMENT SECURITY CONFIG
+========================================================= */
+
+const PAYMENT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const PAYMENT_MIN_FORM_TIME = 4000; // 4 seconds
+const PAYMENT_COOLDOWN = 60 * 1000; // 1 minute
+
+const PAYMENT_COOLDOWN_KEY =
+  "dws_payment_submission_cooldown";
+
+/* =========================================================
+   GOOGLE RECAPTCHA V2
+========================================================= */
+
+const RECAPTCHA_SITE_KEY =
+  import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeOdbAtAAAAAKQ0N2mV-FkJOmayWQcTaEqN0F2l";
+
+const ALLOWED_SCREENSHOT_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
+
+/* =========================================================
+   VALIDATION HELPERS
+========================================================= */
+
+const isValidEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
+};
+
+const isValidUTR = (value) => {
+  const normalized = value
+    .replace(/\s+/g, "")
+    .trim();
+
+  return (
+    normalized.length >= 8 &&
+    normalized.length <= 40 &&
+    /^[a-zA-Z0-9]+$/.test(normalized)
+  );
+};
+
+const hasSuspiciousMarkup = (value) => {
+  return /<[^>]*>|javascript:|data:text\/html/i.test(
+    value
+  );
+};
+
+/* =========================================================
    RESOURCE CATEGORIES
 ========================================================= */
 
@@ -66,19 +116,19 @@ const RESOURCE_CATEGORIES = [
 
 const RESOURCES = [
   {
-  id: 0,
-  icon: Code2,
-  category: "interview",
-  tag: "PREMIUM",
-  title: "Developer Interview & Coding Resource",
-  description:
-    "A practical developer handbook covering programming fundamentals, OOP, coding problems, SQL, Git, REST APIs, web development, project interviews, and HR preparation.",
-  level: "Beginner → Intermediate",
-  format: "PDF",
-  price: "₹99",
-  amount: "99",
-  featured: false,
-},
+    id: 0,
+    icon: Code2,
+    category: "interview",
+    tag: "PREMIUM",
+    title: "Developer Interview & Coding Resource",
+    description:
+      "A practical developer handbook covering programming fundamentals, OOP, coding problems, SQL, Git, REST APIs, web development, project interviews, and HR preparation.",
+    level: "Beginner → Intermediate",
+    format: "PDF",
+    price: "₹99",
+    amount: "99",
+    featured: false,
+  },
 
   {
     id: 2,
@@ -216,20 +266,20 @@ const RESOURCES = [
   },
 
   {
-  id: 9,
-  icon: Layers3,
-  category: "notes",
-  tag: "PREMIUM",
-  title: "Java Full Stack Developer Pack",
-  description:
-    "A complete premium developer preparation bundle combining Java, SQL, React, Spring Boot, projects and interview resources.",
-  level: "Full Stack",
-  format: "Premium Resource Pack",
-  price: "₹2,999",
-  amount: "2999",
-  featured: true,
-  premium: true,
-},
+    id: 9,
+    icon: Layers3,
+    category: "notes",
+    tag: "PREMIUM",
+    title: "Java Full Stack Developer Pack",
+    description:
+      "A complete premium developer preparation bundle combining Java, SQL, React, Spring Boot, projects and interview resources.",
+    level: "Full Stack",
+    format: "Premium Resource Pack",
+    price: "₹2,999",
+    amount: "2999",
+    featured: true,
+    premium: true,
+  },
 ];
 
 /* =========================================================
@@ -304,7 +354,6 @@ function ResourceCard({ resource, onExplore }) {
           group-hover:bg-sky-200/80
         "
       />
-
 
       <div className="relative flex items-start justify-between gap-3">
         <div
@@ -451,9 +500,7 @@ function ResourceCard({ resource, onExplore }) {
             Access
           </p>
 
-          <p
-            className="mt-0.5 text-lg font-bold text-slate-900 sm:text-xl"
-          >
+          <p className="mt-0.5 text-lg font-bold text-slate-900 sm:text-xl">
             {resource.price}
           </p>
         </div>
@@ -496,33 +543,214 @@ function ResourceCard({ resource, onExplore }) {
 ========================================================= */
 
 function ResourceModal({ resource, onClose }) {
-  const [paymentStep, setPaymentStep] = useState("payment");
-  const [paymentScreenshotName, setPaymentScreenshotName] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
+  const [paymentStep, setPaymentStep] =
+    useState("payment");
+
+  const [paymentScreenshotName, setPaymentScreenshotName] =
+    useState("");
+
+  const [submitted, setSubmitted] =
+    useState(false);
+
+  const [sending, setSending] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  const formOpenedAt = useRef(Date.now());
+  const submissionLocked = useRef(false);
+  const recaptchaRef = useRef(null);
+  const recaptchaWidgetId = useRef(null);
+  const [recaptchaReady, setRecaptchaReady] =
+    useState(false);
+
+  useEffect(() => {
+  if (!RECAPTCHA_SITE_KEY) {
+    setRecaptchaReady(false);
+    return undefined;
+  }
+
+  let intervalId = null;
+  let cancelled = false;
+
+  const renderRecaptcha = () => {
+    if (cancelled) return;
+
+    if (
+      !window.grecaptcha ||
+      !recaptchaRef.current ||
+      recaptchaWidgetId.current !== null
+    ) {
+      return;
+    }
+
+    try {
+      recaptchaWidgetId.current =
+        window.grecaptcha.render(
+          recaptchaRef.current,
+          {
+            sitekey: RECAPTCHA_SITE_KEY,
+            theme: "light",
+
+            callback: () => {
+              setError("");
+            },
+
+            "expired-callback": () => {
+              setError(
+                "CAPTCHA expired. Please verify again."
+              );
+            },
+
+            "error-callback": () => {
+              setError(
+                "CAPTCHA verification failed. Please try again."
+              );
+            },
+          }
+        );
+
+      setRecaptchaReady(true);
+
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    } catch (err) {
+      console.error(
+        "reCAPTCHA render failed:",
+        err
+      );
+    }
+  };
+
+  const loadScript = () => {
+    const existingScript =
+      document.querySelector(
+        'script[src^="https://www.google.com/recaptcha/api.js"]'
+      );
+
+    if (!existingScript) {
+      const script =
+        document.createElement("script");
+
+      script.src =
+        "https://www.google.com/recaptcha/api.js?render=explicit";
+
+      script.async = true;
+      script.defer = true;
+
+      document.body.appendChild(script);
+    }
+  };
+
+  loadScript();
+
+  // Keep checking until BOTH:
+  // 1. Google reCAPTCHA is ready
+  // 2. CAPTCHA container exists in the modal
+  intervalId = setInterval(() => {
+    if (
+      window.grecaptcha &&
+      recaptchaRef.current
+    ) {
+      window.grecaptcha.ready(() => {
+        renderRecaptcha();
+      });
+    }
+  }, 300);
+
+  // Also try immediately
+  if (
+    window.grecaptcha &&
+    recaptchaRef.current
+  ) {
+    window.grecaptcha.ready(() => {
+      renderRecaptcha();
+    });
+  }
+
+  return () => {
+    cancelled = true;
+
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+
+    if (
+      window.grecaptcha &&
+      recaptchaWidgetId.current !== null
+    ) {
+      try {
+        window.grecaptcha.reset(
+          recaptchaWidgetId.current
+        );
+      } catch (err) {
+        console.warn(
+          "CAPTCHA reset failed:",
+          err
+        );
+      }
+    }
+
+    recaptchaWidgetId.current = null;
+    setRecaptchaReady(false);
+  };
+}, []);
+
+  const resetRecaptcha = () => {
+    if (
+      window.grecaptcha &&
+      recaptchaWidgetId.current !== null
+    ) {
+      try {
+        window.grecaptcha.reset(
+          recaptchaWidgetId.current
+        );
+      } catch (err) {
+        console.error(
+          "reCAPTCHA reset failed:",
+          err
+        );
+      }
+    }
+  };
 
   if (!resource) return null;
 
   const Icon = resource.icon;
+
   /* -------------------------------------------------------
      DIRECT PAYMENT APPS
   ------------------------------------------------------- */
 
-  const openPaymentApp = (app, appName) => {
-    const UPI_ID = "devika19@fam";
+  const openPaymentApp = (app) => {
+    if (!FAMPAY_UPI_ID) {
+      setError(
+        "UPI payment is temporarily unavailable."
+      );
+      return;
+    }
 
-    if (!UPI_ID) {
-      setError("UPI ID is not configured.");
+    if (
+      !resource?.amount ||
+      !resource?.title
+    ) {
+      setError(
+        "Payment details could not be loaded."
+      );
       return;
     }
 
     const params =
-      `pa=${encodeURIComponent(UPI_ID)}` +
+      `pa=${encodeURIComponent(FAMPAY_UPI_ID)}` +
       `&pn=${encodeURIComponent("Devika Web Solutions")}` +
       `&am=${encodeURIComponent(resource.amount)}` +
       `&cu=INR` +
-      `&tn=${encodeURIComponent(resource.title)}`;
+      `&tn=${encodeURIComponent(
+        resource.title.slice(0, 60)
+      )}`;
 
     const paymentUrls = {
       phonepe: `phonepe://pay?${params}`,
@@ -530,18 +758,18 @@ function ResourceModal({ resource, onClose }) {
       paytm: `paytmmp://pay?${params}`,
     };
 
-    const paymentUrl = paymentUrls[app];
+    const paymentUrl =
+      paymentUrls[app];
 
     if (!paymentUrl) {
-      setError("Selected payment app is not available.");
+      setError(
+        "Selected payment app is not available."
+      );
       return;
     }
 
     setError("");
 
-    // Open the selected payment app directly.
-    // Do not use a timeout fallback here because the browser can
-    // remain visible briefly even when the payment app opens successfully.
     window.location.href = paymentUrl;
   };
 
@@ -552,33 +780,134 @@ function ResourceModal({ resource, onClose }) {
   const handleCompletedPayment = () => {
     setError("");
     setPaymentStep("confirmation");
+
+    formOpenedAt.current = Date.now();
+    submissionLocked.current = false;
   };
 
   /* -------------------------------------------------------
-     EMAILJS SUBMIT
+     VALIDATE REAL IMAGE
   ------------------------------------------------------- */
+
+  const validateScreenshotImage = (file) => {
+    return new Promise((resolve, reject) => {
+      if (!(file instanceof File)) {
+        reject(
+          new Error(
+            "Please select a payment screenshot."
+          )
+        );
+        return;
+      }
+
+      if (
+        !ALLOWED_SCREENSHOT_TYPES.includes(
+          file.type
+        )
+      ) {
+        reject(
+          new Error(
+            "Only JPG, PNG or WEBP payment screenshots are allowed."
+          )
+        );
+        return;
+      }
+
+      if (file.size <= 0) {
+        reject(
+          new Error(
+            "The selected screenshot appears to be empty."
+          )
+        );
+        return;
+      }
+
+      if (
+        file.size >
+        PAYMENT_MAX_FILE_SIZE
+      ) {
+        reject(
+          new Error(
+            "Payment screenshot must be 5MB or smaller."
+          )
+        );
+        return;
+      }
+
+      const image = new Image();
+
+      image.onload = () => {
+        URL.revokeObjectURL(image.src);
+
+        if (
+          image.naturalWidth < 100 ||
+          image.naturalHeight < 100
+        ) {
+          reject(
+            new Error(
+              "Please upload a valid payment screenshot."
+            )
+          );
+          return;
+        }
+
+        resolve(true);
+      };
+
+      image.onerror = () => {
+        URL.revokeObjectURL(image.src);
+
+        reject(
+          new Error(
+            "The selected file is not a valid image."
+          )
+        );
+      };
+
+      image.src =
+        URL.createObjectURL(file);
+    });
+  };
 
   /* -------------------------------------------------------
-     UPLOAD PAYMENT SCREENSHOT TO CLOUDINARY
+     UPLOAD PAYMENT SCREENSHOT
   ------------------------------------------------------- */
 
-  const uploadPaymentScreenshot = async (file) => {
+  const uploadPaymentScreenshot = async (
+    file
+  ) => {
+    await validateScreenshotImage(file);
+
     const cloudName = "ozg46pkw";
-    const uploadPreset = "freelance_payment_screenshots";
+    const uploadPreset =
+      "freelance_payment_screenshots";
 
     const uploadUrl =
       `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
-    const uploadData = new FormData();
+    const uploadData =
+      new FormData();
 
-    uploadData.append("file", file);
-    uploadData.append("upload_preset", uploadPreset);
-    uploadData.append("folder", "freelance-payment-screenshots");
+    uploadData.append(
+      "file",
+      file
+    );
 
-    const response = await fetch(uploadUrl, {
-      method: "POST",
-      body: uploadData,
-    });
+    uploadData.append(
+      "upload_preset",
+      uploadPreset
+    );
+
+    uploadData.append(
+      "folder",
+      "freelance-payment-screenshots"
+    );
+
+    const response =
+      await fetch(uploadUrl, {
+        method: "POST",
+        body: uploadData,
+      });
 
     if (!response.ok) {
       throw new Error(
@@ -586,151 +915,400 @@ function ResourceModal({ resource, onClose }) {
       );
     }
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
-    if (!data.secure_url) {
+    if (!data?.secure_url) {
       throw new Error(
-        "Could not get payment screenshot URL."
+        "Could not securely process the payment screenshot."
       );
     }
 
     return data.secure_url;
   };
 
-  const handleSubmitConfirmation = async (event) => {
+  /* -------------------------------------------------------
+     PAYMENT SUBMISSION
+  ------------------------------------------------------- */
+
+  const handleSubmitConfirmation = async (
+    event
+  ) => {
     event.preventDefault();
 
-    if (sending) return;
+    if (
+      sending ||
+      submissionLocked.current
+    ) {
+      return;
+    }
 
-    setSending(true);
-    setError("");
+    const form =
+      event.currentTarget;
 
-    const form = event.currentTarget;
-    const formData = new FormData(form);
+    const formData =
+      new FormData(form);
 
-    const customerName =
-      String(formData.get("customer_name") || "").trim();
+    /* -----------------------------------------------------
+       HONEYPOT
+    ----------------------------------------------------- */
 
-    const customerEmail =
-      String(formData.get("customer_email") || "").trim();
+    const website = String(
+      formData.get("website") || ""
+    ).trim();
 
-    const utr =
-      String(formData.get("utr") || "").trim();
+    if (website) {
+      setError(
+        "Unable to process this submission."
+      );
+      return;
+    }
 
-    const message =
-      String(formData.get("message") || "").trim();
+    /* -----------------------------------------------------
+       MINIMUM FORM TIME
+    ----------------------------------------------------- */
 
-    const paymentScreenshot =
-      formData.get("payment_screenshot");
+    const timeSpent =
+      Date.now() -
+      formOpenedAt.current;
 
     if (
-      !customerName ||
-      !customerEmail ||
-      !utr ||
-      !(paymentScreenshot instanceof File) ||
+      timeSpent <
+      PAYMENT_MIN_FORM_TIME
+    ) {
+      setError(
+        "Please take a moment to review your payment details before submitting."
+      );
+      return;
+    }
+
+    /* -----------------------------------------------------
+       COOLDOWN
+    ----------------------------------------------------- */
+
+    try {
+      const lastSubmission =
+        Number(
+          localStorage.getItem(
+            PAYMENT_COOLDOWN_KEY
+          ) || 0
+        );
+
+      if (
+        lastSubmission &&
+        Date.now() -
+          lastSubmission <
+          PAYMENT_COOLDOWN
+      ) {
+        const remainingSeconds =
+          Math.ceil(
+            (PAYMENT_COOLDOWN -
+              (Date.now() -
+                lastSubmission)) /
+              1000
+          );
+
+        setError(
+          `Please wait ${remainingSeconds} seconds before submitting again.`
+        );
+
+        return;
+      }
+    } catch {
+      // Ignore localStorage errors.
+    }
+
+    /* -----------------------------------------------------
+       READ FORM DATA
+    ----------------------------------------------------- */
+
+    const customerName =
+      String(
+        formData.get(
+          "customer_name"
+        ) || ""
+      )
+        .trim()
+        .replace(/\s+/g, " ");
+
+    const customerEmail =
+      String(
+        formData.get(
+          "customer_email"
+        ) || ""
+      )
+        .trim()
+        .toLowerCase();
+
+    const utr =
+      String(
+        formData.get("utr") || ""
+      )
+        .trim()
+        .replace(/\s+/g, "");
+
+    const message =
+      String(
+        formData.get("message") || ""
+      ).trim();
+
+    const paymentScreenshot =
+      formData.get(
+        "payment_screenshot"
+      );
+
+    /* -----------------------------------------------------
+       RESOURCE INTEGRITY
+    ----------------------------------------------------- */
+
+    const verifiedResource =
+      RESOURCES.find(
+        (item) =>
+          item.id === resource.id
+      );
+
+    if (!verifiedResource) {
+      setError(
+        "This resource is no longer available."
+      );
+      return;
+    }
+
+    if (
+      verifiedResource.title !==
+        resource.title ||
+      verifiedResource.amount !==
+        resource.amount
+    ) {
+      setError(
+        "Payment details could not be verified. Please refresh the page and try again."
+      );
+      return;
+    }
+
+    /* -----------------------------------------------------
+       NAME VALIDATION
+    ----------------------------------------------------- */
+
+    if (
+      customerName.length < 2 ||
+      customerName.length > 80
+    ) {
+      setError(
+        "Please enter a valid name between 2 and 80 characters."
+      );
+      return;
+    }
+
+    if (
+      hasSuspiciousMarkup(
+        customerName
+      )
+    ) {
+      setError(
+        "Please enter a valid name."
+      );
+      return;
+    }
+
+    /* -----------------------------------------------------
+       EMAIL VALIDATION
+    ----------------------------------------------------- */
+
+    if (
+      customerEmail.length > 120 ||
+      !isValidEmail(
+        customerEmail
+      )
+    ) {
+      setError(
+        "Please enter a valid email address."
+      );
+      return;
+    }
+
+    /* -----------------------------------------------------
+       UTR VALIDATION
+    ----------------------------------------------------- */
+
+    if (!isValidUTR(utr)) {
+      setError(
+        "Please enter a valid transaction ID / UTR."
+      );
+      return;
+    }
+
+    /* -----------------------------------------------------
+       MESSAGE VALIDATION
+    ----------------------------------------------------- */
+
+    if (message.length > 500) {
+      setError(
+        "Message must be 500 characters or less."
+      );
+      return;
+    }
+
+    if (
+      hasSuspiciousMarkup(message)
+    ) {
+      setError(
+        "Please enter a valid message."
+      );
+      return;
+    }
+
+    /* -----------------------------------------------------
+       SCREENSHOT VALIDATION
+    ----------------------------------------------------- */
+
+    if (
+      !(
+        paymentScreenshot instanceof
+        File
+      ) ||
       paymentScreenshot.size === 0
     ) {
       setError(
-        "Please enter your name, email, transaction ID / UTR and upload the payment screenshot."
+        "Please upload your payment screenshot."
       );
-      setSending(false);
       return;
     }
 
-    if (!paymentScreenshot.type.startsWith("image/")) {
+    /* -----------------------------------------------------
+       CAPTCHA VALIDATION
+    ----------------------------------------------------- */
+
+    if (!RECAPTCHA_SITE_KEY) {
       setError(
-        "Please upload a valid payment screenshot image."
+        "CAPTCHA is not configured. Please try again later."
       );
-      setSending(false);
       return;
     }
 
-    if (paymentScreenshot.size > 5 * 1024 * 1024) {
+    if (
+      !recaptchaReady ||
+      !window.grecaptcha ||
+      recaptchaWidgetId.current === null
+    ) {
       setError(
-        "Payment screenshot must be 5MB or smaller."
+        "CAPTCHA is still loading. Please wait a moment and try again."
       );
-      setSending(false);
+      return;
+    }
+
+    const recaptchaToken =
+      window.grecaptcha.getResponse(
+        recaptchaWidgetId.current
+      );
+
+    if (!recaptchaToken) {
+      setError(
+        "Please complete the CAPTCHA verification."
+      );
       return;
     }
 
     try {
-      /* -----------------------------------------------
-         1. UPLOAD SCREENSHOT TO CLOUDINARY
-      ------------------------------------------------ */
+      submissionLocked.current =
+        true;
+
+      setSending(true);
+      setError("");
+
+      /* ---------------------------------------------------
+         1. VALIDATE + UPLOAD SCREENSHOT
+      --------------------------------------------------- */
 
       const screenshotUrl =
         await uploadPaymentScreenshot(
           paymentScreenshot
         );
 
-      /* -----------------------------------------------
-         2. STORE CLOUDINARY URL IN HIDDEN INPUT
-      ------------------------------------------------ */
+      /* ---------------------------------------------------
+         2. SEND PAYMENT DETAILS TO EMAILJS
+      --------------------------------------------------- */
 
-      const screenshotUrlInput =
-        form.querySelector(
-          'input[name="payment_screenshot_url"]'
+      const response =
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            resource_title:
+              verifiedResource.title,
+
+            amount:
+              verifiedResource.price,
+
+            subject:
+              `New Resource Payment Received - ${verifiedResource.title}`,
+
+            customer_name:
+              customerName,
+
+            customer_email:
+              customerEmail,
+
+            utr: utr,
+
+            payment_screenshot_url:
+              screenshotUrl,
+
+            message: message,
+
+            "g-recaptcha-response":
+              recaptchaToken,
+          },
+          EMAILJS_PUBLIC_KEY
         );
 
-      if (screenshotUrlInput) {
-        screenshotUrlInput.value = screenshotUrl;
+      if (
+        !response ||
+        response.status !== 200
+      ) {
+        throw new Error(
+          "Payment details could not be submitted."
+        );
       }
 
-      /* -----------------------------------------------
-         3. SEND ONLY TEXT + CLOUDINARY URL THROUGH EMAILJS
+      /* ---------------------------------------------------
+         3. SAVE COOLDOWN
+      --------------------------------------------------- */
 
-         IMPORTANT:
-         Do NOT use emailjs.sendForm() here because the form still
-         contains the payment_screenshot file input. sendForm() tries
-         to send the actual image file to EmailJS, which can exceed
-         EmailJS's 50KB variables limit and cause HTTP 413.
+      try {
+        localStorage.setItem(
+          PAYMENT_COOLDOWN_KEY,
+          String(Date.now())
+        );
+      } catch {
+        // Ignore localStorage errors.
+      }
 
-         The screenshot is already uploaded to Cloudinary, so EmailJS
-         only needs the Cloudinary URL.
-      ------------------------------------------------ */
+      /* ---------------------------------------------------
+         4. SUCCESS
+      --------------------------------------------------- */
 
-      const response = await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          resource_title: resource.title,
-          amount: resource.price,
-          subject: `New Resource Payment Received - ${resource.title}`,
-          customer_name: customerName,
-          customer_email: customerEmail,
-          utr: utr,
-          payment_screenshot_url: screenshotUrl,
-          message: message,
-        },
-        EMAILJS_PUBLIC_KEY
-      );
-
-      console.log(
-        "EmailJS success:",
-        response.status,
-        response.text
-      );
-
+      resetRecaptcha();
       setSubmitted(true);
     } catch (err) {
       console.error(
-        "Payment Submission Error:",
+        "Payment submission failed:",
         err
       );
 
+      submissionLocked.current =
+        false;
+
+      resetRecaptcha();
+
       setError(
-        String(
-          err?.message ||
-          err?.text ||
-          ""
-        ) ||
+        err?.message ||
           "Payment details could not be submitted. Please try again."
       );
     } finally {
       setSending(false);
     }
   };
-
 
   return (
     <AnimatePresence>
@@ -792,7 +1370,7 @@ function ResourceModal({ resource, onClose }) {
             sm:p-6
           "
         >
-          {/* Glow */}
+          {/* GLOW */}
 
           <div
             className="
@@ -936,6 +1514,8 @@ function ResourceModal({ resource, onClose }) {
                 onClick={() => {
                   setPaymentStep("payment");
                   setError("");
+                  formOpenedAt.current =
+                    Date.now();
                 }}
                 className="
                   mb-3
@@ -1010,6 +1590,8 @@ function ResourceModal({ resource, onClose }) {
                 </p>
               </div>
 
+              {/* RESOURCE SUMMARY */}
+
               <div
                 className="
                   mt-4
@@ -1051,13 +1633,62 @@ function ResourceModal({ resource, onClose }) {
 
               <form
                 id="resource-payment-form"
-                onSubmit={handleSubmitConfirmation}
+                onSubmit={
+                  handleSubmitConfirmation
+                }
                 encType="multipart/form-data"
                 className="mt-4 space-y-2.5"
               >
-                <input type="hidden" name="resource_title" value={resource.title} />
-                <input type="hidden" name="amount" value={resource.price} />
-                <input type="hidden" name="subject" value={`New Resource Payment Received - ${resource.title}`} />
+                {/* =================================================
+                    ANTI-SPAM HONEYPOT
+                ================================================= */}
+
+                <div
+                  aria-hidden="true"
+                  className="
+                    absolute
+                    -left-[9999px]
+                    h-0
+                    w-0
+                    overflow-hidden
+                  "
+                >
+                  <label htmlFor="website">
+                    Website
+                  </label>
+
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabIndex="-1"
+                    autoComplete="off"
+                  />
+                </div>
+
+                {/* HIDDEN RESOURCE DATA */}
+
+                <input
+                  type="hidden"
+                  name="resource_title"
+                  value={resource.title}
+                  readOnly
+                />
+
+                <input
+                  type="hidden"
+                  name="amount"
+                  value={resource.price}
+                  readOnly
+                />
+
+                <input
+                  type="hidden"
+                  name="subject"
+                  value={`New Resource Payment Received - ${resource.title}`}
+                  readOnly
+                />
+
                 {/* NAME */}
 
                 <div>
@@ -1069,6 +1700,7 @@ function ResourceModal({ resource, onClose }) {
                     name="customer_name"
                     type="text"
                     required
+                    maxLength={80}
                     autoComplete="name"
                     placeholder="Enter your name"
                     className="
@@ -1102,6 +1734,7 @@ function ResourceModal({ resource, onClose }) {
                     name="customer_email"
                     type="email"
                     required
+                    maxLength={120}
                     autoComplete="email"
                     placeholder="Enter your email"
                     className="
@@ -1140,6 +1773,8 @@ function ResourceModal({ resource, onClose }) {
                     name="utr"
                     type="text"
                     required
+                    minLength={8}
+                    maxLength={40}
                     autoComplete="off"
                     placeholder="Enter transaction ID / UTR"
                     className="
@@ -1160,41 +1795,116 @@ function ResourceModal({ resource, onClose }) {
                       focus:ring-sky-50
                     "
                   />
+
+                  <p className="mt-1 text-[8px] leading-3.5 text-slate-400">
+                    Enter the transaction ID / UTR shown in your payment confirmation.
+                  </p>
                 </div>
 
                 {/* PAYMENT SCREENSHOT */}
 
                 <div>
                   <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                    Payment Screenshot <span className="text-sky-500">*</span>
+                    Payment Screenshot{" "}
+                    <span className="text-sky-500">
+                      *
+                    </span>
                   </label>
 
                   <label
                     htmlFor="payment-screenshot-upload"
-                    className="group block cursor-pointer rounded-2xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-sky-50/70 p-3 shadow-[0_10px_30px_rgba(15,23,42,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-[0_14px_35px_rgba(14,165,233,0.12)]"
+                    className="
+                      group
+                      block
+                      cursor-pointer
+                      rounded-2xl
+                      border
+                      border-slate-200
+                      bg-gradient-to-br
+                      from-white
+                      via-slate-50
+                      to-sky-50/70
+                      p-3
+                      shadow-[0_10px_30px_rgba(15,23,42,0.06)]
+                      transition-all
+                      duration-200
+                      hover:-translate-y-0.5
+                      hover:border-sky-300
+                      hover:shadow-[0_14px_35px_rgba(14,165,233,0.12)]
+                    "
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-600 transition-all group-hover:scale-105 group-hover:bg-sky-600 group-hover:text-white">
+                      <div
+                        className="
+                          flex
+                          h-11
+                          w-11
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-xl
+                          bg-sky-100
+                          text-sky-600
+                          transition-all
+                          group-hover:scale-105
+                          group-hover:bg-sky-600
+                          group-hover:text-white
+                        "
+                      >
                         <FileText className="h-5 w-5" />
                       </div>
 
                       <div className="min-w-0 flex-1">
                         <p className="text-[11px] font-bold text-slate-800">
-                          {paymentScreenshotName ? "Screenshot selected" : "Upload payment screenshot"}
+                          {paymentScreenshotName
+                            ? "Screenshot selected"
+                            : "Upload payment screenshot"}
                         </p>
+
                         <p className="mt-0.5 truncate text-[9px] text-slate-400">
-                          {paymentScreenshotName || "JPG, PNG or WEBP · Maximum 5MB"}
+                          {paymentScreenshotName ||
+                            "JPG, PNG or WEBP · Maximum 5MB"}
                         </p>
                       </div>
 
-                      <span className="shrink-0 rounded-lg bg-slate-950 px-3 py-2 text-[9px] font-bold text-white shadow-sm transition-all group-hover:bg-sky-600">
-                        {paymentScreenshotName ? "Change" : "Choose File"}
+                      <span
+                        className="
+                          shrink-0
+                          rounded-lg
+                          bg-slate-950
+                          px-3
+                          py-2
+                          text-[9px]
+                          font-bold
+                          text-white
+                          shadow-sm
+                          transition-all
+                          group-hover:bg-sky-600
+                        "
+                      >
+                        {paymentScreenshotName
+                          ? "Change"
+                          : "Choose File"}
                       </span>
                     </div>
 
                     {paymentScreenshotName && (
-                      <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-2">
+                      <div
+                        className="
+                          mt-2.5
+                          flex
+                          items-center
+                          gap-2
+                          rounded-lg
+                          border
+                          border-emerald-100
+                          bg-emerald-50
+                          px-2.5
+                          py-2
+                        "
+                      >
                         <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+
                         <span className="min-w-0 truncate text-[9px] font-semibold text-emerald-700">
                           {paymentScreenshotName}
                         </span>
@@ -1207,11 +1917,60 @@ function ResourceModal({ resource, onClose }) {
                     name="payment_screenshot"
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
-                    required
                     className="sr-only"
                     onChange={(event) => {
-                      const file = event.target.files?.[0];
-                      setPaymentScreenshotName(file ? file.name : "");
+                      const file =
+                        event.target.files?.[0];
+
+                      if (!file) {
+                        setPaymentScreenshotName(
+                          ""
+                        );
+                        return;
+                      }
+
+                      if (
+                        !ALLOWED_SCREENSHOT_TYPES.includes(
+                          file.type
+                        )
+                      ) {
+                        event.target.value =
+                          "";
+
+                        setPaymentScreenshotName(
+                          ""
+                        );
+
+                        setError(
+                          "Only JPG, PNG or WEBP payment screenshots are allowed."
+                        );
+
+                        return;
+                      }
+
+                      if (
+                        file.size >
+                        PAYMENT_MAX_FILE_SIZE
+                      ) {
+                        event.target.value =
+                          "";
+
+                        setPaymentScreenshotName(
+                          ""
+                        );
+
+                        setError(
+                          "Payment screenshot must be 5MB or smaller."
+                        );
+
+                        return;
+                      }
+
+                      setError("");
+
+                      setPaymentScreenshotName(
+                        file.name
+                      );
                     }}
                   />
 
@@ -1237,6 +1996,7 @@ function ResourceModal({ resource, onClose }) {
                   <textarea
                     name="message"
                     rows={2}
+                    maxLength={500}
                     placeholder="Optional message..."
                     className="
                       w-full
@@ -1257,6 +2017,25 @@ function ResourceModal({ resource, onClose }) {
                       focus:ring-sky-50
                     "
                   />
+                </div>
+
+                {/* CAPTCHA */}
+
+                <div className="pt-1">
+                  <p className="mb-1.5 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    Security Verification
+                  </p>
+
+                  <div
+                    ref={recaptchaRef}
+                    className="min-h-[78px]"
+                  />
+
+                  {!RECAPTCHA_SITE_KEY && (
+                    <p className="mt-1 text-[9px] text-red-500">
+                      CAPTCHA configuration is missing.
+                    </p>
+                  )}
                 </div>
 
                 {/* ERROR */}
@@ -1327,26 +2106,38 @@ function ResourceModal({ resource, onClose }) {
                   ) : (
                     <>
                       Submit Payment Details
-                      <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+
+                      <ArrowRight
+                        className="
+                          h-3
+                          w-3
+                          transition-transform
+                          group-hover:translate-x-1
+                        "
+                      />
                     </>
                   )}
                 </button>
               </form>
 
-            <div className="mt-4 rounded-xl border border-sky-100 bg-sky-50/60 px-3 py-3">
-              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-sky-700">
-                Payment Verification & Delivery
-              </p>
-              <p className="mt-1 text-[10px] leading-4 text-slate-500">
-                Your payment will be manually verified. Once your payment is confirmed,
-                your purchased resource will be delivered to your registered email
-                <span className="font-bold text-slate-700"> within 24 hours.</span>
-              </p>
-            </div>
+              <div className="mt-4 rounded-xl border border-sky-100 bg-sky-50/60 px-3 py-3">
+                <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-sky-700">
+                  Payment Verification & Delivery
+                </p>
 
-            <div className="mt-2 text-center text-[8px] font-semibold text-slate-400">
-              🔒 Secure Manual Verification · 📩 Delivery within 24 hours
-            </div>
+                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                  Your payment will be manually verified. Once your payment is confirmed,
+                  your purchased resource will be delivered to your registered email
+                  <span className="font-bold text-slate-700">
+                    {" "}
+                    within 24 hours.
+                  </span>
+                </p>
+              </div>
+
+              <div className="mt-2 text-center text-[8px] font-semibold text-slate-400">
+                🔒 Secure Manual Verification · 📩 Delivery within 24 hours
+              </div>
 
               <p className="mt-2.5 text-center text-[8px] leading-3.5 text-slate-400">
                 Please make sure your transaction ID / UTR is correct.
@@ -1361,7 +2152,19 @@ function ResourceModal({ resource, onClose }) {
             <>
               <div className="relative flex items-center gap-2.5 pr-8">
                 <div
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 text-white"
+                  className="
+                    flex
+                    h-10
+                    w-10
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-gradient-to-br
+                    from-sky-500
+                    to-blue-700
+                    text-white
+                  "
                 >
                   <Icon className="h-4.5 w-4.5" />
                 </div>
@@ -1424,9 +2227,7 @@ function ResourceModal({ resource, onClose }) {
                 ))}
               </div>
 
-              {/* =================================================
-                  IMPORTANT PAYMENT NOTICE
-              ================================================= */}
+              {/* IMPORTANT PAYMENT NOTICE */}
 
               <div
                 className="
@@ -1500,9 +2301,7 @@ function ResourceModal({ resource, onClose }) {
                       Get access
                     </p>
 
-                    <p
-                      className="mt-0.5 text-lg font-black text-slate-900"
-                    >
+                    <p className="mt-0.5 text-lg font-black text-slate-900">
                       {resource.price}
                     </p>
                   </div>
@@ -1520,15 +2319,37 @@ function ResourceModal({ resource, onClose }) {
                   </p>
 
                   <div className="grid grid-cols-3 gap-2">
-
                     <button
                       type="button"
-                      onClick={() => openPaymentApp("phonepe", "PhonePe")}
-                      className="flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl border border-purple-100 bg-white px-2 py-2 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
+                      onClick={() =>
+                        openPaymentApp(
+                          "phonepe"
+                        )
+                      }
+                      className="
+                        flex
+                        min-h-[68px]
+                        flex-col
+                        items-center
+                        justify-center
+                        gap-1.5
+                        rounded-xl
+                        border
+                        border-purple-100
+                        bg-white
+                        px-2
+                        py-2
+                        shadow-sm
+                        transition-all
+                        hover:-translate-y-0.5
+                        hover:shadow-md
+                        active:scale-[0.97]
+                      "
                     >
                       <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-[13px] font-black text-purple-700">
                         P
                       </div>
+
                       <span className="text-[9px] font-bold text-slate-700">
                         PhonePe
                       </span>
@@ -1536,12 +2357,35 @@ function ResourceModal({ resource, onClose }) {
 
                     <button
                       type="button"
-                      onClick={() => openPaymentApp("googlepay", "Google Pay")}
-                      className="flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl border border-blue-100 bg-white px-2 py-2 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
+                      onClick={() =>
+                        openPaymentApp(
+                          "googlepay"
+                        )
+                      }
+                      className="
+                        flex
+                        min-h-[68px]
+                        flex-col
+                        items-center
+                        justify-center
+                        gap-1.5
+                        rounded-xl
+                        border
+                        border-blue-100
+                        bg-white
+                        px-2
+                        py-2
+                        shadow-sm
+                        transition-all
+                        hover:-translate-y-0.5
+                        hover:shadow-md
+                        active:scale-[0.97]
+                      "
                     >
                       <div className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-[13px] font-black text-blue-600">
                         G
                       </div>
+
                       <span className="text-[9px] font-bold text-slate-700">
                         Google Pay
                       </span>
@@ -1549,17 +2393,39 @@ function ResourceModal({ resource, onClose }) {
 
                     <button
                       type="button"
-                      onClick={() => openPaymentApp("paytm", "Paytm")}
-                      className="flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl border border-sky-100 bg-white px-2 py-2 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
+                      onClick={() =>
+                        openPaymentApp(
+                          "paytm"
+                        )
+                      }
+                      className="
+                        flex
+                        min-h-[68px]
+                        flex-col
+                        items-center
+                        justify-center
+                        gap-1.5
+                        rounded-xl
+                        border
+                        border-sky-100
+                        bg-white
+                        px-2
+                        py-2
+                        shadow-sm
+                        transition-all
+                        hover:-translate-y-0.5
+                        hover:shadow-md
+                        active:scale-[0.97]
+                      "
                     >
                       <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-[9px] font-black text-sky-600">
                         PAY
                       </div>
+
                       <span className="text-[9px] font-bold text-slate-700">
                         Paytm
                       </span>
                     </button>
-
                   </div>
 
                   <p className="mt-2 text-center text-[8px] leading-3 text-slate-400">
@@ -1597,7 +2463,8 @@ function ResourceModal({ resource, onClose }) {
                   />
 
                   <p className="mt-1.5 text-[9px] font-semibold text-slate-500">
-                    Or Scan &amp; Pay {resource.price}
+                    Or Scan &amp; Pay{" "}
+                    {resource.price}
                   </p>
 
                   <div
@@ -1616,8 +2483,9 @@ function ResourceModal({ resource, onClose }) {
                     "
                   >
                     <Smartphone className="h-3 w-3 shrink-0 text-sky-500" />
+
                     <span className="truncate text-[8px] font-medium text-slate-500">
-                      UPI: devika19@fam
+                      UPI: {FAMPAY_UPI_ID}
                     </span>
                   </div>
                 </div>
@@ -1650,7 +2518,9 @@ function ResourceModal({ resource, onClose }) {
               <div className="relative mt-3">
                 <button
                   type="button"
-                  onClick={handleCompletedPayment}
+                  onClick={
+                    handleCompletedPayment
+                  }
                   className="
                     group
                     flex
@@ -1706,36 +2576,38 @@ export default function Resources() {
   const [selectedResource, setSelectedResource] =
     useState(null);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] =
+    useState("");
 
-  const filteredResources = RESOURCES.filter(
-    (resource) => {
-      const matchesCategory =
-        activeCategory === "all" ||
-        resource.category === activeCategory;
+  const filteredResources =
+    RESOURCES.filter(
+      (resource) => {
+        const matchesCategory =
+          activeCategory === "all" ||
+          resource.category ===
+            activeCategory;
 
-      const searchText = search
-        .toLowerCase()
-        .trim();
+        const searchText =
+          search.toLowerCase().trim();
 
-      const matchesSearch =
-        !searchText ||
-        resource.title
-          .toLowerCase()
-          .includes(searchText) ||
-        resource.description
-          .toLowerCase()
-          .includes(searchText) ||
-        resource.tag
-          .toLowerCase()
-          .includes(searchText);
+        const matchesSearch =
+          !searchText ||
+          resource.title
+            .toLowerCase()
+            .includes(searchText) ||
+          resource.description
+            .toLowerCase()
+            .includes(searchText) ||
+          resource.tag
+            .toLowerCase()
+            .includes(searchText);
 
-      return (
-        matchesCategory &&
-        matchesSearch
-      );
-    }
-  );
+        return (
+          matchesCategory &&
+          matchesSearch
+        );
+      }
+    );
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -1800,8 +2672,14 @@ export default function Resources() {
         >
           <motion.a
             href="/"
-            initial={{ opacity: 0, x: -15 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{
+              opacity: 0,
+              x: -15,
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+            }}
             transition={{
               duration: 0.5,
               ease: EASE,
@@ -1942,7 +2820,14 @@ export default function Resources() {
 
               <motion.div
                 variants={fadeUp}
-                className="mt-7 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3"
+                className="
+                  mt-7
+                  flex
+                  flex-wrap
+                  gap-2.5
+                  sm:mt-8
+                  sm:gap-3
+                "
               >
                 {[
                   {
@@ -1958,7 +2843,8 @@ export default function Resources() {
                     value: "Developer Notes",
                   },
                 ].map((item) => {
-                  const ItemIcon = item.icon;
+                  const ItemIcon =
+                    item.icon;
 
                   return (
                     <div
@@ -2075,30 +2961,38 @@ export default function Resources() {
                 <div className="mt-7 space-y-4">
                   {[
                     {
-                      label: "Learn fundamentals",
+                      label:
+                        "Learn fundamentals",
                       progress: "100%",
                     },
                     {
-                      label: "Build projects",
+                      label:
+                        "Build projects",
                       progress: "80%",
                     },
                     {
-                      label: "Prepare for interviews",
+                      label:
+                        "Prepare for interviews",
                       progress: "60%",
                     },
                   ].map((item) => (
                     <div key={item.label}>
                       <div className="flex justify-between text-[11px] font-medium text-slate-500">
-                        <span>{item.label}</span>
+                        <span>
+                          {item.label}
+                        </span>
 
                         <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
                       </div>
 
                       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
                         <motion.div
-                          initial={{ width: 0 }}
+                          initial={{
+                            width: 0,
+                          }}
                           animate={{
-                            width: item.progress,
+                            width:
+                              item.progress,
                           }}
                           transition={{
                             delay: 0.7,
@@ -2215,8 +3109,11 @@ export default function Resources() {
             <input
               type="text"
               value={search}
+              maxLength={100}
               onChange={(event) =>
-                setSearch(event.target.value)
+                setSearch(
+                  event.target.value
+                )
               }
               placeholder="Search resources..."
               className="
@@ -2245,41 +3142,46 @@ export default function Resources() {
         {/* CATEGORIES */}
 
         <div className="mt-7 flex gap-2 overflow-x-auto pb-2 sm:mt-8">
-          {RESOURCE_CATEGORIES.map((category) => {
-            const active =
-              activeCategory === category.id;
+          {RESOURCE_CATEGORIES.map(
+            (category) => {
+              const active =
+                activeCategory ===
+                category.id;
 
-            return (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() =>
-                  setActiveCategory(category.id)
-                }
-                className={`
-                  shrink-0
-                  cursor-pointer
-                  rounded-full
-                  px-3.5
-                  py-2.5
-                  text-[10px]
-                  font-semibold
-                  transition-all
-                  duration-300
-                  sm:px-4
-                  sm:text-xs
-
-                  ${
-                    active
-                      ? "bg-slate-900 text-white shadow-[0_8px_20px_rgba(15,23,42,0.15)]"
-                      : "border border-slate-200 bg-white text-slate-500 hover:border-sky-200 hover:text-sky-600"
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() =>
+                    setActiveCategory(
+                      category.id
+                    )
                   }
-                `}
-              >
-                {category.label}
-              </button>
-            );
-          })}
+                  className={`
+                    shrink-0
+                    cursor-pointer
+                    rounded-full
+                    px-3.5
+                    py-2.5
+                    text-[10px]
+                    font-semibold
+                    transition-all
+                    duration-300
+                    sm:px-4
+                    sm:text-xs
+
+                    ${
+                      active
+                        ? "bg-slate-900 text-white shadow-[0_8px_20px_rgba(15,23,42,0.15)]"
+                        : "border border-slate-200 bg-white text-slate-500 hover:border-sky-200 hover:text-sky-600"
+                    }
+                  `}
+                >
+                  {category.label}
+                </button>
+              );
+            }
+          )}
         </div>
 
         {/* RESOURCE GRID */}
@@ -2298,19 +3200,24 @@ export default function Resources() {
           "
         >
           <AnimatePresence mode="popLayout">
-            {filteredResources.map((resource) => (
-              <ResourceCard
-                key={resource.id}
-                resource={resource}
-                onExplore={setSelectedResource}
-              />
-            ))}
+            {filteredResources.map(
+              (resource) => (
+                <ResourceCard
+                  key={resource.id}
+                  resource={resource}
+                  onExplore={
+                    setSelectedResource
+                  }
+                />
+              )
+            )}
           </AnimatePresence>
         </motion.div>
 
         {/* EMPTY */}
 
-        {filteredResources.length === 0 && (
+        {filteredResources.length ===
+          0 && (
           <div
             className="
               mt-8
@@ -2556,7 +3463,9 @@ export default function Resources() {
           <ResourceModal
             resource={selectedResource}
             onClose={() =>
-              setSelectedResource(null)
+              setSelectedResource(
+                null
+              )
             }
           />
         )}

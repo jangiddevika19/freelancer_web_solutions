@@ -506,28 +506,43 @@ function ResourceModal({ resource, onClose }) {
 
   const Icon = resource.icon;
   /* -------------------------------------------------------
-     OPEN FAMPAY
+     DIRECT PAYMENT APPS
   ------------------------------------------------------- */
 
-  const handlePayViaFampay = () => {
-    if (
-      !FAMPAY_UPI_ID ||
-      FAMPAY_UPI_ID === "YOUR_FAMPAY_UPI_ID"
-    ) {
-      setError(
-        "Fampay UPI ID is not configured yet. Please add your UPI ID in Resources.jsx."
-      );
+  const openPaymentApp = (app, appName) => {
+    const UPI_ID = "devika19@fam";
+
+    if (!UPI_ID) {
+      setError("UPI ID is not configured.");
       return;
     }
 
-    const upiUrl =
-      `upi://pay?pa=${encodeURIComponent(FAMPAY_UPI_ID)}` +
+    const params =
+      `pa=${encodeURIComponent(UPI_ID)}` +
       `&pn=${encodeURIComponent("Devika Web Solutions")}` +
       `&am=${encodeURIComponent(resource.amount)}` +
       `&cu=INR` +
       `&tn=${encodeURIComponent(resource.title)}`;
 
-    window.location.href = upiUrl;
+    const paymentUrls = {
+      phonepe: `phonepe://pay?${params}`,
+      googlepay: `tez://upi/pay?${params}`,
+      paytm: `paytmmp://pay?${params}`,
+    };
+
+    const paymentUrl = paymentUrls[app];
+
+    if (!paymentUrl) {
+      setError("Selected payment app is not available.");
+      return;
+    }
+
+    setError("");
+
+    // Open the selected payment app directly.
+    // Do not use a timeout fallback here because the browser can
+    // remain visible briefly even when the payment app opens successfully.
+    window.location.href = paymentUrl;
   };
 
   /* -------------------------------------------------------
@@ -1497,38 +1512,60 @@ function ResourceModal({ resource, onClose }) {
                   </div>
                 </div>
 
-                {/* PAY VIA UPI */}
+                {/* PAYMENT APPS */}
 
-                <button
-                  type="button"
-                  onClick={handlePayViaFampay}
-                  className="
-                    mt-3
-                    flex
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-lg
-                    bg-sky-600
-                    px-4
-                    py-3
-                    text-[11px]
-                    font-bold
-                    text-white
-                    shadow-[0_8px_20px_rgba(14,165,233,0.20)]
-                    transition-all
-                    hover:bg-sky-700
-                    active:scale-[0.99]
-                  "
-                >
-                  <Smartphone className="h-4 w-4" />
-                  Pay via UPI — {resource.price}
-                </button>
+                <div className="mt-3">
+                  <p className="mb-2 text-center text-[9px] font-semibold text-slate-500">
+                    Pay securely using your preferred UPI app
+                  </p>
 
-                <p className="relative mt-2 text-center text-[8px] text-slate-400">
-                  Opens your available UPI payment app
-                </p>
+                  <div className="grid grid-cols-3 gap-2">
+
+                    <button
+                      type="button"
+                      onClick={() => openPaymentApp("phonepe", "PhonePe")}
+                      className="flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl border border-purple-100 bg-white px-2 py-2 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
+                    >
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-[13px] font-black text-purple-700">
+                        P
+                      </div>
+                      <span className="text-[9px] font-bold text-slate-700">
+                        PhonePe
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => openPaymentApp("googlepay", "Google Pay")}
+                      className="flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl border border-blue-100 bg-white px-2 py-2 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
+                    >
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-[13px] font-black text-blue-600">
+                        G
+                      </div>
+                      <span className="text-[9px] font-bold text-slate-700">
+                        Google Pay
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => openPaymentApp("paytm", "Paytm")}
+                      className="flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl border border-sky-100 bg-white px-2 py-2 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
+                    >
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-[9px] font-black text-sky-600">
+                        PAY
+                      </div>
+                      <span className="text-[9px] font-bold text-slate-700">
+                        Paytm
+                      </span>
+                    </button>
+
+                  </div>
+
+                  <p className="mt-2 text-center text-[8px] leading-3 text-slate-400">
+                    Tap your preferred payment app to continue
+                  </p>
+                </div>
 
                 {/* QR */}
 
@@ -1548,7 +1585,7 @@ function ResourceModal({ resource, onClose }) {
                 >
                   <img
                     src="/payment-qr.png"
-                    alt="Fampay UPI Payment QR"
+                    alt="UPI Payment QR"
                     className="
                       h-24
                       w-24
@@ -1560,9 +1597,8 @@ function ResourceModal({ resource, onClose }) {
                   />
 
                   <p className="mt-1.5 text-[9px] font-semibold text-slate-500">
-                    Scan & Pay {resource.price}
+                    Or Scan &amp; Pay {resource.price}
                   </p>
-
 
                   <div
                     className="
@@ -1580,9 +1616,8 @@ function ResourceModal({ resource, onClose }) {
                     "
                   >
                     <Smartphone className="h-3 w-3 shrink-0 text-sky-500" />
-
                     <span className="truncate text-[8px] font-medium text-slate-500">
-                      UPI: {FAMPAY_UPI_ID}
+                      UPI: devika19@fam
                     </span>
                   </div>
                 </div>
