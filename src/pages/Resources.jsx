@@ -255,7 +255,7 @@ const RESOURCES = [
     icon: BriefcaseBusiness,
     category: "interview",
     tag: "INTERVIEW",
-    title: "Full Stack Interview Pack",
+    title: " Java Full Stack Interview Pack",
     description:
       "A practical collection of frontend, backend, database and project-based interview questions.",
     level: "Job Preparation",
