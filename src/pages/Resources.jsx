@@ -539,20 +539,10 @@ function ResourceModal({ resource, onClose }) {
 
     setError("");
 
-    const startTime = Date.now();
-
+    // Open the selected payment app directly.
+    // Do not use a timeout fallback here because the browser can
+    // remain visible briefly even when the payment app opens successfully.
     window.location.href = paymentUrl;
-
-    setTimeout(() => {
-      if (
-        document.visibilityState === "visible" &&
-        Date.now() - startTime >= 1500
-      ) {
-        setError(
-          `${appName} could not be opened. Please use the QR code to complete payment.`
-        );
-      }
-    }, 1800);
   };
 
   /* -------------------------------------------------------
