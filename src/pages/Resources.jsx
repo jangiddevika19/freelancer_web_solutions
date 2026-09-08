@@ -543,6 +543,45 @@ function ResourceModal({ resource, onClose }) {
      EMAILJS SUBMIT
   ------------------------------------------------------- */
 
+  /* -------------------------------------------------------
+     UPLOAD PAYMENT SCREENSHOT TO CLOUDINARY
+  ------------------------------------------------------- */
+
+  const uploadPaymentScreenshot = async (file) => {
+    const cloudName = "ozg46pkw";
+    const uploadPreset = "freelance_payment_screenshots";
+
+    const uploadUrl =
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+    const uploadData = new FormData();
+
+    uploadData.append("file", file);
+    uploadData.append("upload_preset", uploadPreset);
+    uploadData.append("folder", "freelance-payment-screenshots");
+
+    const response = await fetch(uploadUrl, {
+      method: "POST",
+      body: uploadData,
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        "Payment screenshot upload failed. Please try again."
+      );
+    }
+
+    const data = await response.json();
+
+    if (!data.secure_url) {
+      throw new Error(
+        "Could not get payment screenshot URL."
+      );
+    }
+
+    return data.secure_url;
+  };
+
   const handleSubmitConfirmation = async (event) => {
     event.preventDefault();
 
@@ -555,10 +594,10 @@ function ResourceModal({ resource, onClose }) {
     const formData = new FormData(form);
 
     const customerName =
-      String(formData.get("name") || "").trim();
+      String(formData.get("customer_name") || "").trim();
 
     const customerEmail =
-      String(formData.get("email") || "").trim();
+      String(formData.get("customer_email") || "").trim();
 
     const utr =
       String(formData.get("utr") || "").trim();
@@ -566,9 +605,16 @@ function ResourceModal({ resource, onClose }) {
     const message =
       String(formData.get("message") || "").trim();
 
-    const paymentScreenshot = formData.get("payment_screenshot");
+    const paymentScreenshot =
+      formData.get("payment_screenshot");
 
-    if (!customerName || !customerEmail || !utr || !(paymentScreenshot instanceof File) || paymentScreenshot.size === 0) {
+    if (
+      !customerName ||
+      !customerEmail ||
+      !utr ||
+      !(paymentScreenshot instanceof File) ||
+      paymentScreenshot.size === 0
+    ) {
       setError(
         "Please enter your name, email, transaction ID / UTR and upload the payment screenshot."
       );
@@ -577,22 +623,70 @@ function ResourceModal({ resource, onClose }) {
     }
 
     if (!paymentScreenshot.type.startsWith("image/")) {
-      setError("Please upload a valid payment screenshot image.");
+      setError(
+        "Please upload a valid payment screenshot image."
+      );
       setSending(false);
       return;
     }
 
     if (paymentScreenshot.size > 5 * 1024 * 1024) {
-      setError("Payment screenshot must be 5MB or smaller.");
+      setError(
+        "Payment screenshot must be 5MB or smaller."
+      );
       setSending(false);
       return;
     }
 
     try {
-      const response = await emailjs.sendForm(
+      /* -----------------------------------------------
+         1. UPLOAD SCREENSHOT TO CLOUDINARY
+      ------------------------------------------------ */
+
+      const screenshotUrl =
+        await uploadPaymentScreenshot(
+          paymentScreenshot
+        );
+
+      /* -----------------------------------------------
+         2. STORE CLOUDINARY URL IN HIDDEN INPUT
+      ------------------------------------------------ */
+
+      const screenshotUrlInput =
+        form.querySelector(
+          'input[name="payment_screenshot_url"]'
+        );
+
+      if (screenshotUrlInput) {
+        screenshotUrlInput.value = screenshotUrl;
+      }
+
+      /* -----------------------------------------------
+         3. SEND ONLY TEXT + CLOUDINARY URL THROUGH EMAILJS
+
+         IMPORTANT:
+         Do NOT use emailjs.sendForm() here because the form still
+         contains the payment_screenshot file input. sendForm() tries
+         to send the actual image file to EmailJS, which can exceed
+         EmailJS's 50KB variables limit and cause HTTP 413.
+
+         The screenshot is already uploaded to Cloudinary, so EmailJS
+         only needs the Cloudinary URL.
+      ------------------------------------------------ */
+
+      const response = await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
-        form,
+        {
+          resource_title: resource.title,
+          amount: resource.price,
+          subject: `New Resource Payment Received - ${resource.title}`,
+          customer_name: customerName,
+          customer_email: customerEmail,
+          utr: utr,
+          payment_screenshot_url: screenshotUrl,
+          message: message,
+        },
         EMAILJS_PUBLIC_KEY
       );
 
@@ -605,18 +699,23 @@ function ResourceModal({ resource, onClose }) {
       setSubmitted(true);
     } catch (err) {
       console.error(
-        "EmailJS Resource Payment Error:",
+        "Payment Submission Error:",
         err
       );
 
       setError(
-        err?.text ||
+        String(
+          err?.message ||
+          err?.text ||
+          ""
+        ) ||
           "Payment details could not be submitted. Please try again."
       );
     } finally {
       setSending(false);
     }
   };
+
 
   return (
     <AnimatePresence>
@@ -952,7 +1051,7 @@ function ResourceModal({ resource, onClose }) {
                   </label>
 
                   <input
-                    name="name"
+                    name="customer_name"
                     type="text"
                     required
                     autoComplete="name"
@@ -985,7 +1084,7 @@ function ResourceModal({ resource, onClose }) {
                   </label>
 
                   <input
-                    name="email"
+                    name="customer_email"
                     type="email"
                     required
                     autoComplete="email"
@@ -1099,6 +1198,13 @@ function ResourceModal({ resource, onClose }) {
                       const file = event.target.files?.[0];
                       setPaymentScreenshotName(file ? file.name : "");
                     }}
+                  />
+
+                  <input
+                    type="hidden"
+                    name="payment_screenshot_url"
+                    value=""
+                    readOnly
                   />
 
                   <p className="mt-1.5 text-[8px] leading-3.5 text-slate-400">
