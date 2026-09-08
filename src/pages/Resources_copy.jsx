@@ -28,7 +28,7 @@ import {
 ========================================================= */
 
 const EMAILJS_SERVICE_ID = "service_mkjrjyp";
-const EMAILJS_TEMPLATE_ID = "template_3i9x41q";
+const EMAILJS_TEMPLATE_ID = "template_li5zdeq";
 const EMAILJS_PUBLIC_KEY = "_WgZhn1NzggSPGWvl";
 
 /* =========================================================
@@ -36,7 +36,6 @@ const EMAILJS_PUBLIC_KEY = "_WgZhn1NzggSPGWvl";
 ========================================================= */
 
 const FAMPAY_UPI_ID = "devika19@fam";
-
 
 /* =========================================================
    RESOURCE CATEGORIES
@@ -67,34 +66,19 @@ const RESOURCE_CATEGORIES = [
 
 const RESOURCES = [
   {
-    id: 0,
-    icon: Sparkles,
-    category: "notes",
-    tag: "TRIAL",
-    title: "Developer Resource Trial",
-    description:
-      "Try a premium developer resource for just ₹1 before purchasing a complete resource.",
-    level: "Trial Access",
-    format: "Trial Resource",
-    price: "₹1",
-    amount: "1",
-    featured: true,
-  },
-
-  {
-    id: 1,
-    icon: BookOpen,
-    category: "notes",
-    tag: "NOTES",
-    title: "Core Java Quick Notes",
-    description:
-      "Simple and practical Core Java notes covering important fundamentals, OOPs and commonly used concepts.",
-    level: "Core Java",
-    format: "PDF Notes",
-    price: "₹99",
-    amount: "99",
-    featured: true,
-  },
+  id: 0,
+  icon: Code2,
+  category: "interview",
+  tag: "PREMIUM",
+  title: "Developer Interview & Coding Resource",
+  description:
+    "A practical developer handbook covering programming fundamentals, OOP, coding problems, SQL, Git, REST APIs, web development, project interviews, and HR preparation.",
+  level: "Beginner → Intermediate",
+  format: "PDF",
+  price: "₹99",
+  amount: "99",
+  featured: false,
+},
 
   {
     id: 2,
@@ -105,7 +89,22 @@ const RESOURCES = [
     description:
       "Quick SQL revision sheet covering important commands, queries, joins, constraints and commonly used syntax.",
     level: "SQL Revision",
-    format: "Cheat Sheet",
+    format: "8–10 Page Cheat Sheet",
+    price: "₹99",
+    amount: "99",
+    featured: true,
+  },
+
+  {
+    id: 1,
+    icon: BookOpen,
+    category: "notes",
+    tag: "NOTES",
+    title: "Core Java Quick Notes",
+    description:
+      "Quick Core Java revision notes covering Java basics, OOPs, Strings, Collections, Exception Handling and Java 8+.",
+    level: "Core Java",
+    format: "8–10 Page Quick Notes",
     price: "₹99",
     amount: "99",
     featured: true,
@@ -116,11 +115,26 @@ const RESOURCES = [
     icon: Terminal,
     category: "interview",
     tag: "INTERVIEW",
-    title: "Java Interview Questions",
+    title: "Java 50 Interview Questions",
     description:
-      "Important Core Java and OOP interview questions explained in a simple and practical way.",
+      "50 important Core Java and OOP interview questions explained in a simple and practical way.",
     level: "Interview Prep",
-    format: "Questions",
+    format: "50 Interview Questions",
+    price: "₹149",
+    amount: "149",
+    featured: true,
+  },
+
+  {
+    id: 10,
+    icon: Code2,
+    category: "interview",
+    tag: "INTERVIEW",
+    title: "React 50 Interview Questions",
+    description:
+      "50 important React interview questions covering components, JSX, props, state, hooks, routing, API integration and practical React concepts.",
+    level: "React Interview Prep",
+    format: "50 Interview Questions",
     price: "₹149",
     amount: "149",
     featured: true,
@@ -131,13 +145,28 @@ const RESOURCES = [
     icon: Database,
     category: "interview",
     tag: "INTERVIEW",
-    title: "SQL Interview Questions",
+    title: "SQL 50 Interview Questions",
     description:
-      "Frequently asked SQL interview questions covering queries, joins, constraints and database concepts.",
+      "50 frequently asked SQL interview questions covering queries, joins, constraints and database concepts.",
     level: "Interview Prep",
-    format: "Questions",
+    format: "50 Interview Questions",
     price: "₹149",
     amount: "149",
+    featured: false,
+  },
+
+  {
+    id: 6,
+    icon: BookOpen,
+    category: "notes",
+    tag: "NOTES",
+    title: "Core Java Developer Notes",
+    description:
+      "35-page practical Core Java notes covering Java fundamentals, OOPs, Collections, Exception Handling, Java 8+ and important interview concepts.",
+    level: "Core Java",
+    format: "35-Page PDF Notes",
+    price: "₹199",
+    amount: "199",
     featured: false,
   },
 
@@ -148,27 +177,12 @@ const RESOURCES = [
     tag: "ROADMAP",
     title: "Frontend Developer Roadmap",
     description:
-      "Learn HTML, CSS, JavaScript, React, Git and modern frontend development step by step.",
+      "A practical step-by-step roadmap covering HTML, CSS, JavaScript, React, APIs, Git, projects, deployment and interview preparation.",
     level: "Beginner → Job Ready",
-    format: "Roadmap",
+    format: "20–25 Page Roadmap",
     price: "₹199",
     amount: "199",
     featured: true,
-  },
-
-  {
-    id: 6,
-    icon: BookOpen,
-    category: "notes",
-    tag: "NOTES",
-    title: "Core Java Developer Notes",
-    description:
-      "Clean notes covering Java fundamentals, OOPs, Collections, Exception Handling and important concepts.",
-    level: "Core Java",
-    format: "PDF Notes",
-    price: "₹199",
-    amount: "199",
-    featured: false,
   },
 
   {
@@ -195,26 +209,27 @@ const RESOURCES = [
     description:
       "A practical collection of frontend, backend, database and project-based interview questions.",
     level: "Job Preparation",
-    format: "Question Pack",
+    format: "35–45 Page Interview Pack",
     price: "₹299",
     amount: "299",
     featured: true,
   },
 
   {
-    id: 9,
-    icon: Layers3,
-    category: "notes",
-    tag: "PACK",
-    title: "Java Full Stack Developer Pack",
-    description:
-      "A complete developer preparation bundle combining roadmaps, notes and interview resources.",
-    level: "Full Stack",
-    format: "Resource Pack",
-    price: "₹299",
-    amount: "299",
-    featured: true,
-  },
+  id: 9,
+  icon: Layers3,
+  category: "notes",
+  tag: "PREMIUM",
+  title: "Java Full Stack Developer Pack",
+  description:
+    "A complete premium developer preparation bundle combining Java, SQL, React, Spring Boot, projects and interview resources.",
+  level: "Full Stack",
+  format: "Premium Resource Pack",
+  price: "₹2,999",
+  amount: "2999",
+  featured: true,
+  premium: true,
+},
 ];
 
 /* =========================================================
@@ -290,30 +305,6 @@ function ResourceCard({ resource, onExplore }) {
         "
       />
 
-      {resource.id === 0 && (
-        <div
-          className="
-            absolute
-            left-4
-            top-4
-            z-10
-            rounded-full
-            bg-gradient-to-r
-            from-emerald-500
-            to-green-600
-            px-2.5
-            py-1
-            text-[8px]
-            font-black
-            uppercase
-            tracking-[0.12em]
-            text-white
-            shadow-lg
-          "
-        >
-          Try for ₹1
-        </div>
-      )}
 
       <div className="relative flex items-start justify-between gap-3">
         <div
@@ -461,15 +452,7 @@ function ResourceCard({ resource, onExplore }) {
           </p>
 
           <p
-            className={`
-              mt-0.5
-              font-bold
-              ${
-                resource.id === 0
-                  ? "text-xl text-emerald-600"
-                  : "text-lg text-slate-900 sm:text-xl"
-              }
-            `}
+            className="mt-0.5 text-lg font-bold text-slate-900 sm:text-xl"
           >
             {resource.price}
           </p>
@@ -500,7 +483,7 @@ function ResourceCard({ resource, onExplore }) {
             sm:text-xs
           "
         >
-          {resource.id === 0 ? "Try ₹1" : "Explore"}
+          Explore
           <ArrowUpRight className="h-3.5 w-3.5" />
         </motion.button>
       </div>
@@ -514,6 +497,7 @@ function ResourceCard({ resource, onExplore }) {
 
 function ResourceModal({ resource, onClose }) {
   const [paymentStep, setPaymentStep] = useState("payment");
+  const [paymentScreenshotName, setPaymentScreenshotName] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
@@ -521,8 +505,6 @@ function ResourceModal({ resource, onClose }) {
   if (!resource) return null;
 
   const Icon = resource.icon;
-  const isTrial = resource.id === 0;
-
   /* -------------------------------------------------------
      OPEN FAMPAY
   ------------------------------------------------------- */
@@ -539,15 +521,11 @@ function ResourceModal({ resource, onClose }) {
     }
 
     const upiUrl =
-      `upi://pay?pa=${encodeURIComponent(
-        FAMPAY_UPI_ID
-      )}` +
+      `upi://pay?pa=${encodeURIComponent(FAMPAY_UPI_ID)}` +
       `&pn=${encodeURIComponent("Devika Web Solutions")}` +
       `&am=${encodeURIComponent(resource.amount)}` +
       `&cu=INR` +
-      `&tn=${encodeURIComponent(
-        resource.title
-      )}`;
+      `&tn=${encodeURIComponent(resource.title)}`;
 
     window.location.href = upiUrl;
   };
@@ -565,6 +543,45 @@ function ResourceModal({ resource, onClose }) {
      EMAILJS SUBMIT
   ------------------------------------------------------- */
 
+  /* -------------------------------------------------------
+     UPLOAD PAYMENT SCREENSHOT TO CLOUDINARY
+  ------------------------------------------------------- */
+
+  const uploadPaymentScreenshot = async (file) => {
+    const cloudName = "ozg46pkw";
+    const uploadPreset = "freelance_payment_screenshots";
+
+    const uploadUrl =
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+    const uploadData = new FormData();
+
+    uploadData.append("file", file);
+    uploadData.append("upload_preset", uploadPreset);
+    uploadData.append("folder", "freelance-payment-screenshots");
+
+    const response = await fetch(uploadUrl, {
+      method: "POST",
+      body: uploadData,
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        "Payment screenshot upload failed. Please try again."
+      );
+    }
+
+    const data = await response.json();
+
+    if (!data.secure_url) {
+      throw new Error(
+        "Could not get payment screenshot URL."
+      );
+    }
+
+    return data.secure_url;
+  };
+
   const handleSubmitConfirmation = async (event) => {
     event.preventDefault();
 
@@ -577,10 +594,10 @@ function ResourceModal({ resource, onClose }) {
     const formData = new FormData(form);
 
     const customerName =
-      String(formData.get("name") || "").trim();
+      String(formData.get("customer_name") || "").trim();
 
     const customerEmail =
-      String(formData.get("email") || "").trim();
+      String(formData.get("customer_email") || "").trim();
 
     const utr =
       String(formData.get("utr") || "").trim();
@@ -588,51 +605,88 @@ function ResourceModal({ resource, onClose }) {
     const message =
       String(formData.get("message") || "").trim();
 
-    if (!customerName || !customerEmail || !utr) {
+    const paymentScreenshot =
+      formData.get("payment_screenshot");
+
+    if (
+      !customerName ||
+      !customerEmail ||
+      !utr ||
+      !(paymentScreenshot instanceof File) ||
+      paymentScreenshot.size === 0
+    ) {
       setError(
-        "Please enter your name, email address and transaction ID / UTR."
+        "Please enter your name, email, transaction ID / UTR and upload the payment screenshot."
       );
       setSending(false);
       return;
     }
 
-    /*
-      IMPORTANT:
-      These names exactly match your EmailJS template:
+    if (!paymentScreenshot.type.startsWith("image/")) {
+      setError(
+        "Please upload a valid payment screenshot image."
+      );
+      setSending(false);
+      return;
+    }
 
-      {{resource_title}}
-      {{amount}}
-      {{customer_name}}
-      {{customer_email}}
-      {{utr}}
-      {{message}}
-    */
-
-    const templateParams = {
-      resource_title: resource.title,
-      amount: resource.price,
-
-      customer_name: customerName,
-      customer_email: customerEmail,
-
-      utr: utr,
-
-      message:
-        message ||
-        "No additional message was provided.",
-
-      subject: `New Resource Payment Received - ${resource.title}`,
-
-      reply_to: customerEmail,
-
-      website: "Devika Web Solutions",
-    };
+    if (paymentScreenshot.size > 5 * 1024 * 1024) {
+      setError(
+        "Payment screenshot must be 5MB or smaller."
+      );
+      setSending(false);
+      return;
+    }
 
     try {
+      /* -----------------------------------------------
+         1. UPLOAD SCREENSHOT TO CLOUDINARY
+      ------------------------------------------------ */
+
+      const screenshotUrl =
+        await uploadPaymentScreenshot(
+          paymentScreenshot
+        );
+
+      /* -----------------------------------------------
+         2. STORE CLOUDINARY URL IN HIDDEN INPUT
+      ------------------------------------------------ */
+
+      const screenshotUrlInput =
+        form.querySelector(
+          'input[name="payment_screenshot_url"]'
+        );
+
+      if (screenshotUrlInput) {
+        screenshotUrlInput.value = screenshotUrl;
+      }
+
+      /* -----------------------------------------------
+         3. SEND ONLY TEXT + CLOUDINARY URL THROUGH EMAILJS
+
+         IMPORTANT:
+         Do NOT use emailjs.sendForm() here because the form still
+         contains the payment_screenshot file input. sendForm() tries
+         to send the actual image file to EmailJS, which can exceed
+         EmailJS's 50KB variables limit and cause HTTP 413.
+
+         The screenshot is already uploaded to Cloudinary, so EmailJS
+         only needs the Cloudinary URL.
+      ------------------------------------------------ */
+
       const response = await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
-        templateParams,
+        {
+          resource_title: resource.title,
+          amount: resource.price,
+          subject: `New Resource Payment Received - ${resource.title}`,
+          customer_name: customerName,
+          customer_email: customerEmail,
+          utr: utr,
+          payment_screenshot_url: screenshotUrl,
+          message: message,
+        },
         EMAILJS_PUBLIC_KEY
       );
 
@@ -642,26 +696,26 @@ function ResourceModal({ resource, onClose }) {
         response.text
       );
 
-      /*
-        SUCCESS ONLY AFTER EMAILJS SUCCESS.
-        Clicking "I've Completed Payment" alone
-        NEVER shows success.
-      */
-
       setSubmitted(true);
     } catch (err) {
       console.error(
-        "EmailJS Resource Payment Error:",
+        "Payment Submission Error:",
         err
       );
 
       setError(
-        "Payment details could not be submitted. Please try again."
+        String(
+          err?.message ||
+          err?.text ||
+          ""
+        ) ||
+          "Payment details could not be submitted. Please try again."
       );
     } finally {
       setSending(false);
     }
   };
+
 
   return (
     <AnimatePresence>
@@ -832,7 +886,8 @@ function ResourceModal({ resource, onClose }) {
 
               <p className="mt-3 text-[9px] leading-4 text-slate-400">
                 Your payment will be verified manually.
-                Access details will be shared after confirmation.
+                The PDF/resource will be shared to your
+                provided email after verification.
               </p>
 
               <button
@@ -913,6 +968,33 @@ function ResourceModal({ resource, onClose }) {
                 </div>
               </div>
 
+              {/* EMAIL / DELIVERY NOTICE */}
+
+              <div
+                className="
+                  mt-4
+                  rounded-xl
+                  border
+                  border-amber-100
+                  bg-amber-50/70
+                  p-3
+                "
+              >
+                <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
+                  Important before submitting
+                </p>
+
+                <p className="mt-1 text-[10px] leading-4 text-amber-800">
+                  Please provide a valid email address. Your PDF/resource
+                  will be shared to this email after successful payment
+                  verification.
+                </p>
+
+                <p className="mt-1.5 text-[10px] font-bold leading-4 text-amber-800">
+                  No refund is available after payment.
+                </p>
+              </div>
+
               <div
                 className="
                   mt-4
@@ -953,9 +1035,14 @@ function ResourceModal({ resource, onClose }) {
               </div>
 
               <form
+                id="resource-payment-form"
                 onSubmit={handleSubmitConfirmation}
+                encType="multipart/form-data"
                 className="mt-4 space-y-2.5"
               >
+                <input type="hidden" name="resource_title" value={resource.title} />
+                <input type="hidden" name="amount" value={resource.price} />
+                <input type="hidden" name="subject" value={`New Resource Payment Received - ${resource.title}`} />
                 {/* NAME */}
 
                 <div>
@@ -964,7 +1051,7 @@ function ResourceModal({ resource, onClose }) {
                   </label>
 
                   <input
-                    name="name"
+                    name="customer_name"
                     type="text"
                     required
                     autoComplete="name"
@@ -993,11 +1080,11 @@ function ResourceModal({ resource, onClose }) {
 
                 <div>
                   <label className="mb-1 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                    Email Address
+                    Valid Email Address
                   </label>
 
                   <input
-                    name="email"
+                    name="customer_email"
                     type="email"
                     required
                     autoComplete="email"
@@ -1020,6 +1107,11 @@ function ResourceModal({ resource, onClose }) {
                       focus:ring-sky-50
                     "
                   />
+
+                  <p className="mt-1 text-[8px] leading-3.5 text-slate-400">
+                    Your PDF/resource will be shared to this email after
+                    payment verification. Please make sure it is correct.
+                  </p>
                 </div>
 
                 {/* UTR */}
@@ -1053,6 +1145,71 @@ function ResourceModal({ resource, onClose }) {
                       focus:ring-sky-50
                     "
                   />
+                </div>
+
+                {/* PAYMENT SCREENSHOT */}
+
+                <div>
+                  <label className="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    Payment Screenshot <span className="text-sky-500">*</span>
+                  </label>
+
+                  <label
+                    htmlFor="payment-screenshot-upload"
+                    className="group block cursor-pointer rounded-2xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-sky-50/70 p-3 shadow-[0_10px_30px_rgba(15,23,42,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-[0_14px_35px_rgba(14,165,233,0.12)]"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-600 transition-all group-hover:scale-105 group-hover:bg-sky-600 group-hover:text-white">
+                        <FileText className="h-5 w-5" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-bold text-slate-800">
+                          {paymentScreenshotName ? "Screenshot selected" : "Upload payment screenshot"}
+                        </p>
+                        <p className="mt-0.5 truncate text-[9px] text-slate-400">
+                          {paymentScreenshotName || "JPG, PNG or WEBP · Maximum 5MB"}
+                        </p>
+                      </div>
+
+                      <span className="shrink-0 rounded-lg bg-slate-950 px-3 py-2 text-[9px] font-bold text-white shadow-sm transition-all group-hover:bg-sky-600">
+                        {paymentScreenshotName ? "Change" : "Choose File"}
+                      </span>
+                    </div>
+
+                    {paymentScreenshotName && (
+                      <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-2">
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                        <span className="min-w-0 truncate text-[9px] font-semibold text-emerald-700">
+                          {paymentScreenshotName}
+                        </span>
+                      </div>
+                    )}
+                  </label>
+
+                  <input
+                    id="payment-screenshot-upload"
+                    name="payment_screenshot"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    required
+                    className="sr-only"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      setPaymentScreenshotName(file ? file.name : "");
+                    }}
+                  />
+
+                  <input
+                    type="hidden"
+                    name="payment_screenshot_url"
+                    value=""
+                    readOnly
+                  />
+
+                  <p className="mt-1.5 text-[8px] leading-3.5 text-slate-400">
+                    Upload the payment confirmation screenshot so we can verify your transaction.
+                  </p>
                 </div>
 
                 {/* MESSAGE */}
@@ -1161,8 +1318,24 @@ function ResourceModal({ resource, onClose }) {
                 </button>
               </form>
 
+            <div className="mt-4 rounded-xl border border-sky-100 bg-sky-50/60 px-3 py-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-sky-700">
+                Payment Verification & Delivery
+              </p>
+              <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                Your payment will be manually verified. Once your payment is confirmed,
+                your purchased resource will be delivered to your registered email
+                <span className="font-bold text-slate-700"> within 24 hours.</span>
+              </p>
+            </div>
+
+            <div className="mt-2 text-center text-[8px] font-semibold text-slate-400">
+              🔒 Secure Manual Verification · 📩 Delivery within 24 hours
+            </div>
+
               <p className="mt-2.5 text-center text-[8px] leading-3.5 text-slate-400">
                 Please make sure your transaction ID / UTR is correct.
+                Your resource will be shared after payment verification.
               </p>
             </div>
           ) : (
@@ -1173,21 +1346,7 @@ function ResourceModal({ resource, onClose }) {
             <>
               <div className="relative flex items-center gap-2.5 pr-8">
                 <div
-                  className={`
-                    flex
-                    h-10
-                    w-10
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    ${
-                      isTrial
-                        ? "bg-gradient-to-br from-emerald-500 to-green-600"
-                        : "bg-gradient-to-br from-sky-500 to-blue-700"
-                    }
-                    text-white
-                  `}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 text-white"
                 >
                   <Icon className="h-4.5 w-4.5" />
                 </div>
@@ -1250,6 +1409,59 @@ function ResourceModal({ resource, onClose }) {
                 ))}
               </div>
 
+              {/* =================================================
+                  IMPORTANT PAYMENT NOTICE
+              ================================================= */}
+
+              <div
+                className="
+                  relative
+                  mt-3
+                  rounded-xl
+                  border
+                  border-amber-100
+                  bg-amber-50/70
+                  p-3
+                "
+              >
+                <div className="flex gap-2">
+                  <div
+                    className="
+                      mt-0.5
+                      flex
+                      h-5
+                      w-5
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-amber-100
+                      text-[10px]
+                      font-black
+                      text-amber-700
+                    "
+                  >
+                    !
+                  </div>
+
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
+                      Important before payment
+                    </p>
+
+                    <p className="mt-1 text-[9px] leading-4 text-amber-800">
+                      Please make sure you have a valid email address.
+                      Your PDF/resource will be shared to the email you
+                      provide after successful payment verification.
+                    </p>
+
+                    <p className="mt-1 text-[9px] font-bold leading-4 text-amber-800">
+                      No refund is available after payment.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* PAYMENT BOX */}
 
               <div
@@ -1274,16 +1486,7 @@ function ResourceModal({ resource, onClose }) {
                     </p>
 
                     <p
-                      className={`
-                        mt-0.5
-                        text-lg
-                        font-black
-                        ${
-                          isTrial
-                            ? "text-emerald-600"
-                            : "text-slate-900"
-                        }
-                      `}
+                      className="mt-0.5 text-lg font-black text-slate-900"
                     >
                       {resource.price}
                     </p>
@@ -1293,6 +1496,39 @@ function ResourceModal({ resource, onClose }) {
                     ONE-TIME
                   </div>
                 </div>
+
+                {/* PAY VIA UPI */}
+
+                <button
+                  type="button"
+                  onClick={handlePayViaFampay}
+                  className="
+                    mt-3
+                    flex
+                    w-full
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-lg
+                    bg-sky-600
+                    px-4
+                    py-3
+                    text-[11px]
+                    font-bold
+                    text-white
+                    shadow-[0_8px_20px_rgba(14,165,233,0.20)]
+                    transition-all
+                    hover:bg-sky-700
+                    active:scale-[0.99]
+                  "
+                >
+                  <Smartphone className="h-4 w-4" />
+                  Pay via UPI — {resource.price}
+                </button>
+
+                <p className="relative mt-2 text-center text-[8px] text-slate-400">
+                  Opens your available UPI payment app
+                </p>
 
                 {/* QR */}
 
@@ -1327,11 +1563,6 @@ function ResourceModal({ resource, onClose }) {
                     Scan & Pay {resource.price}
                   </p>
 
-                  {isTrial && (
-                    <span className="mt-0.5 text-[8px] font-semibold text-emerald-600">
-                      Trial access — only ₹1
-                    </span>
-                  )}
 
                   <div
                     className="
@@ -1355,37 +1586,6 @@ function ResourceModal({ resource, onClose }) {
                     </span>
                   </div>
                 </div>
-
-                {/* FAMPAY BUTTON */}
-
-                {/* <button
-                  type="button"
-                  onClick={handlePayViaFampay}
-                  className="
-                    mt-2.5
-                    flex
-                    w-full
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-lg
-                    bg-gradient-to-r
-                    from-sky-600
-                    to-blue-700
-                    px-4
-                    py-2.5
-                    text-[10px]
-                    font-bold
-                    text-white
-                    shadow-[0_8px_18px_rgba(14,165,233,0.20)]
-                    transition
-                    hover:from-sky-500
-                    hover:to-blue-600
-                  "
-                >
-                  <Smartphone className="h-3.5 w-3.5" />
-                  Pay via Fampay
-                </button> */}
               </div>
 
               {/* ERROR */}
@@ -1449,7 +1649,8 @@ function ResourceModal({ resource, onClose }) {
               </div>
 
               <p className="relative mt-2 text-center text-[8px] leading-3.5 text-slate-400">
-                After payment, submit your transaction ID / UTR for verification.
+                After payment, submit your transaction ID / UTR and a
+                valid email address for verification and delivery.
               </p>
             </>
           )}
