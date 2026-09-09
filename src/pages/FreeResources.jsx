@@ -24,20 +24,56 @@ const FreeResources = () => {
   return (
     <div className="min-h-screen overflow-x-hidden bg-slate-50 text-slate-900">
 
+      {/* ================= FIXED BACK BUTTON ================= */}
+      <a
+        href="/resource-hub"
+        className="
+          fixed
+          left-3
+          top-4
+          z-[100]
+
+          inline-flex
+          items-center
+          gap-1.5
+
+          rounded-xl
+          border
+          border-slate-200
+          bg-white/95
+          px-3
+          py-2
+
+          text-xs
+          font-semibold
+          text-slate-600
+
+          shadow-[0_8px_25px_rgba(15,23,42,0.10)]
+          backdrop-blur-xl
+
+          transition-all
+          duration-300
+
+          hover:-translate-x-0.5
+          hover:border-sky-200
+          hover:bg-sky-50
+          hover:text-sky-600
+
+          sm:left-5
+          sm:top-5
+          sm:gap-2
+          sm:px-4
+          sm:py-2.5
+          sm:text-sm
+        "
+      >
+        <ArrowLeft className="h-4 w-4" />
+        <span>Back to Resources</span>
+      </a>
+
       {/* ================= HEADER ================= */}
       <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
-
-          <a
-            href="/resource-hub"
-            className="group inline-flex items-center gap-2 rounded-full px-2 py-1.5 text-xs font-semibold text-slate-500 transition hover:text-sky-600 sm:text-sm"
-          >
-            <ArrowLeft
-              size={16}
-              className="transition-transform group-hover:-translate-x-1"
-            />
-            <span>Back to Resources</span>
-          </a>
+        <div className="mx-auto flex max-w-7xl items-center justify-end px-4 py-3 sm:px-6 lg:px-10">
 
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-white">
@@ -212,13 +248,17 @@ const FreeResources = () => {
 
                 {/* Download Button */}
                 <button
-  onClick={() => {
-    if (resource.file) {
-      window.open(resource.file, "_blank", "noopener,noreferrer");
-    }
-  }}
-  className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs font-bold text-white transition-all duration-300 hover:bg-sky-600 sm:mt-6 sm:px-5 sm:py-3.5 sm:text-sm"
->
+                  onClick={() => {
+                    if (resource.file) {
+                      window.open(
+                        resource.file,
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                    }
+                  }}
+                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs font-bold text-white transition-all duration-300 hover:bg-sky-600 sm:mt-6 sm:px-5 sm:py-3.5 sm:text-sm"
+                >
                   <Download size={16} />
 
                   Get Free Resource

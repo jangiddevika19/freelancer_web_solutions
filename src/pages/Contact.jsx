@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 
 import {
+  ArrowLeft,
   Mail,
   Send,
   Code2,
@@ -399,6 +400,55 @@ export default function Contact() {
         lg:py-24
       "
     >
+      {/* ================= FIXED BACK BUTTON ================= */}
+      {window.location.pathname === "/contact" && (
+        <a
+          href="/resource-hub"
+          className="
+            fixed
+            left-3
+            top-4
+            z-[100]
+
+            inline-flex
+            items-center
+            gap-1.5
+
+            rounded-xl
+            border
+            border-slate-200
+            bg-white/95
+            px-3
+            py-2
+
+            text-xs
+            font-semibold
+            text-slate-600
+
+            shadow-[0_8px_25px_rgba(15,23,42,0.10)]
+            backdrop-blur-xl
+
+            transition-all
+            duration-300
+
+            hover:-translate-x-0.5
+            hover:border-sky-200
+            hover:bg-sky-50
+            hover:text-sky-600
+
+            sm:left-5
+            sm:top-5
+            sm:gap-2
+            sm:px-4
+            sm:py-2.5
+            sm:text-sm
+          "
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back</span>
+        </a>
+      )}
+
       {/* ================= AMBIENT BACKGROUND ================= */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div
@@ -953,7 +1003,7 @@ export default function Contact() {
                   duration-300
                   hover:-translate-y-0.5
                   hover:bg-slate-800
-                  hover:shadow-[0_12px_28px_rgba(15,23,42,0.2)]
+                  hover:shadow-[0_12px_28px_rgba(15,23-42,0.2)]
                   disabled:cursor-not-allowed
                   disabled:opacity-60
                   sm:px-6

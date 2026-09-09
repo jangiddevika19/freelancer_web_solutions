@@ -3590,6 +3590,15 @@ export default function Resources() {
       </main>
 
       {/* =================================================
+          FOOTER
+      ================================================= */}
+      <footer className="border-t border-slate-200 bg-white py-5 text-center">
+        <p className="text-xs font-semibold text-slate-400">
+          © {new Date().getFullYear()} Devika Jangid. All rights reserved.
+        </p>
+      </footer>
+
+      {/* =================================================
           MODAL
       ================================================= */}
 

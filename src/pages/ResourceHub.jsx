@@ -14,7 +14,7 @@ import {
 
 export default function ResourceHub() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
 
       {/* =====================================================
           HEADER
@@ -144,8 +144,7 @@ export default function ResourceHub() {
           {/* =================================================
               FREE RESOURCES
           ================================================= */}
-          <motion.a
-            href="/free-resources"
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
@@ -177,24 +176,26 @@ export default function ResourceHub() {
 
                 <div className="flex items-center gap-3">
 
-                  <div className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-gradient-to-br
-                    from-sky-400
-                    to-blue-600
-                    text-white
-                    shadow-lg
-                    shadow-sky-500/20
-                    sm:h-14
-                    sm:w-14
-                    sm:rounded-2xl
-                  ">
+                  <div
+                    className="
+                      flex
+                      h-11
+                      w-11
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-gradient-to-br
+                      from-sky-400
+                      to-blue-600
+                      text-white
+                      shadow-lg
+                      shadow-sky-500/20
+                      sm:h-14
+                      sm:w-14
+                      sm:rounded-2xl
+                    "
+                  >
                     <BookOpen className="h-5 w-5 sm:h-7 sm:w-7" />
                   </div>
 
@@ -210,19 +211,21 @@ export default function ResourceHub() {
 
                 </div>
 
-                <span className="
-                  shrink-0
-                  rounded-full
-                  bg-sky-50
-                  px-2.5
-                  py-1
-                  text-[9px]
-                  font-bold
-                  text-sky-600
-                  sm:px-3
-                  sm:py-1.5
-                  sm:text-xs
-                ">
+                <span
+                  className="
+                    shrink-0
+                    rounded-full
+                    bg-sky-50
+                    px-2.5
+                    py-1
+                    text-[9px]
+                    font-bold
+                    text-sky-600
+                    sm:px-3
+                    sm:py-1.5
+                    sm:text-xs
+                  "
+                >
                   FREE
                 </span>
 
@@ -230,15 +233,17 @@ export default function ResourceHub() {
 
 
               {/* Description */}
-              <p className="
-                mt-4
-                text-xs
-                leading-5
-                text-slate-600
-                sm:mt-5
-                sm:text-sm
-                sm:leading-6
-              ">
+              <p
+                className="
+                  mt-4
+                  text-xs
+                  leading-5
+                  text-slate-600
+                  sm:mt-5
+                  sm:text-sm
+                  sm:leading-6
+                "
+              >
                 Start learning with free notes, quizzes, practice material and
                 useful developer guides.
               </p>
@@ -253,10 +258,12 @@ export default function ResourceHub() {
                   color="sky"
                 />
 
+                {/* DIRECT QUIZ LINK */}
                 <Feature
                   icon={Trophy}
                   text="Quizzes"
                   color="sky"
+                  href="/quiz"
                 />
 
                 <Feature
@@ -275,37 +282,43 @@ export default function ResourceHub() {
 
 
               {/* CTA */}
-              <div className="
-                mt-4
-                flex
-                items-center
-                justify-between
-                border-t
-                border-slate-100
-                pt-4
-                sm:mt-6
-                sm:pt-5
-              ">
+              <a
+                href="/free-resources"
+                className="
+                  mt-4
+                  flex
+                  items-center
+                  justify-between
+                  border-t
+                  border-slate-100
+                  pt-4
+                  sm:mt-6
+                  sm:pt-5
+                "
+              >
                 <span className="text-xs font-bold text-slate-900 sm:text-sm">
                   Explore Free
                 </span>
 
-                <span className="
-                  flex
-                  items-center
-                  gap-1
-                  text-[10px]
-                  font-bold
-                  text-sky-600
-                  sm:text-xs
-                ">
+                <span
+                  className="
+                    flex
+                    items-center
+                    gap-1
+                    text-[10px]
+                    font-bold
+                    text-sky-600
+                    sm:text-xs
+                  "
+                >
                   Open
                   <ArrowRight className="h-3 w-3" />
                 </span>
-              </div>
+              </a>
 
             </div>
-          </motion.a>
+          </motion.div>
+
 
 
           {/* =================================================
@@ -336,19 +349,21 @@ export default function ResourceHub() {
             "
           >
 
-            <div className="
-              pointer-events-none
-              absolute
-              -right-20
-              -top-20
-              h-44
-              w-44
-              rounded-full
-              bg-violet-500/20
-              blur-3xl
-              sm:h-60
-              sm:w-60
-            " />
+            <div
+              className="
+                pointer-events-none
+                absolute
+                -right-20
+                -top-20
+                h-44
+                w-44
+                rounded-full
+                bg-violet-500/20
+                blur-3xl
+                sm:h-60
+                sm:w-60
+              "
+            />
 
             <div className="relative">
 
@@ -357,24 +372,26 @@ export default function ResourceHub() {
 
                 <div className="flex items-center gap-3">
 
-                  <div className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-gradient-to-br
-                    from-violet-500
-                    to-purple-700
-                    text-white
-                    shadow-lg
-                    shadow-violet-500/30
-                    sm:h-14
-                    sm:w-14
-                    sm:rounded-2xl
-                  ">
+                  <div
+                    className="
+                      flex
+                      h-11
+                      w-11
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-gradient-to-br
+                      from-violet-500
+                      to-purple-700
+                      text-white
+                      shadow-lg
+                      shadow-violet-500/30
+                      sm:h-14
+                      sm:w-14
+                      sm:rounded-2xl
+                    "
+                  >
                     <Crown className="h-5 w-5 sm:h-7 sm:w-7" />
                   </div>
 
@@ -390,21 +407,23 @@ export default function ResourceHub() {
 
                 </div>
 
-                <span className="
-                  shrink-0
-                  rounded-full
-                  bg-violet-500/15
-                  px-2.5
-                  py-1
-                  text-[9px]
-                  font-bold
-                  text-violet-300
-                  ring-1
-                  ring-violet-400/20
-                  sm:px-3
-                  sm:py-1.5
-                  sm:text-xs
-                ">
+                <span
+                  className="
+                    shrink-0
+                    rounded-full
+                    bg-violet-500/15
+                    px-2.5
+                    py-1
+                    text-[9px]
+                    font-bold
+                    text-violet-300
+                    ring-1
+                    ring-violet-400/20
+                    sm:px-3
+                    sm:py-1.5
+                    sm:text-xs
+                  "
+                >
                   PREMIUM
                 </span>
 
@@ -412,15 +431,17 @@ export default function ResourceHub() {
 
 
               {/* Description */}
-              <p className="
-                mt-4
-                text-xs
-                leading-5
-                text-slate-300
-                sm:mt-5
-                sm:text-sm
-                sm:leading-6
-              ">
+              <p
+                className="
+                  mt-4
+                  text-xs
+                  leading-5
+                  text-slate-300
+                  sm:mt-5
+                  sm:text-sm
+                  sm:leading-6
+                "
+              >
                 Go deeper with structured roadmaps, interview preparation,
                 detailed notes and developer resource packs.
               </p>
@@ -461,30 +482,34 @@ export default function ResourceHub() {
 
 
               {/* CTA */}
-              <div className="
-                mt-4
-                flex
-                items-center
-                justify-between
-                border-t
-                border-white/10
-                pt-4
-                sm:mt-6
-                sm:pt-5
-              ">
+              <div
+                className="
+                  mt-4
+                  flex
+                  items-center
+                  justify-between
+                  border-t
+                  border-white/10
+                  pt-4
+                  sm:mt-6
+                  sm:pt-5
+                "
+              >
                 <span className="text-xs font-bold sm:text-sm">
                   Explore Premium
                 </span>
 
-                <span className="
-                  flex
-                  items-center
-                  gap-1
-                  text-[10px]
-                  font-bold
-                  text-violet-300
-                  sm:text-xs
-                ">
+                <span
+                  className="
+                    flex
+                    items-center
+                    gap-1
+                    text-[10px]
+                    font-bold
+                    text-violet-300
+                    sm:text-xs
+                  "
+                >
                   View Resources
                   <ArrowRight className="h-3 w-3" />
                 </span>
@@ -494,6 +519,7 @@ export default function ResourceHub() {
           </motion.a>
 
         </div>
+
 
 
         {/* =================================================
@@ -524,56 +550,62 @@ export default function ResourceHub() {
           >
 
             {/* Background Glow */}
-            <div className="
-              pointer-events-none
-              absolute
-              -right-20
-              -top-20
-              h-48
-              w-48
-              rounded-full
-              bg-sky-100
-              blur-3xl
-              sm:h-64
-              sm:w-64
-            " />
+            <div
+              className="
+                pointer-events-none
+                absolute
+                -right-20
+                -top-20
+                h-48
+                w-48
+                rounded-full
+                bg-sky-100
+                blur-3xl
+                sm:h-64
+                sm:w-64
+              "
+            />
 
-            <div className="
-              relative
-              flex
-              flex-col
-              gap-6
-              p-5
-              sm:p-7
-              lg:flex-row
-              lg:items-center
-              lg:justify-between
-              lg:gap-10
-            ">
+            <div
+              className="
+                relative
+                flex
+                flex-col
+                gap-6
+                p-5
+                sm:p-7
+                lg:flex-row
+                lg:items-center
+                lg:justify-between
+                lg:gap-10
+              "
+            >
 
               {/* Left Content */}
               <div className="min-w-0 flex-1">
 
                 <div className="flex items-start gap-3 sm:gap-4">
 
-                  <div className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-gradient-to-br
-                    from-sky-400
-                    to-blue-600
-                    text-white
-                    shadow-lg
-                    shadow-sky-500/20
-                    sm:h-14
-                    sm:w-14
-                    sm:rounded-2xl
-                  ">
+                  <div
+                    className="
+                      flex
+                      h-11
+                      w-11
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-gradient-to-br
+                      from-sky-400
+                      to-blue-600
+                      text-white
+                      shadow-lg
+                      shadow-sky-500/20
+                      sm:h-14
+                      sm:w-14
+                      sm:rounded-2xl
+                    "
+                  >
                     <NotebookPen className="h-5 w-5 sm:h-7 sm:w-7" />
                   </div>
 
@@ -581,42 +613,48 @@ export default function ResourceHub() {
 
                     <div className="flex flex-wrap items-center gap-2">
 
-                      <p className="
-                        text-[9px]
-                        font-bold
-                        uppercase
-                        tracking-wider
-                        text-sky-500
-                        sm:text-[10px]
-                      ">
+                      <p
+                        className="
+                          text-[9px]
+                          font-bold
+                          uppercase
+                          tracking-wider
+                          text-sky-500
+                          sm:text-[10px]
+                        "
+                      >
                         Personalized Learning
                       </p>
 
-                      <span className="
-                        rounded-full
-                        bg-sky-50
-                        px-2
-                        py-0.5
-                        text-[8px]
-                        font-bold
-                        text-sky-600
-                        ring-1
-                        ring-sky-100
-                        sm:text-[9px]
-                      ">
+                      <span
+                        className="
+                          rounded-full
+                          bg-sky-50
+                          px-2
+                          py-0.5
+                          text-[8px]
+                          font-bold
+                          text-sky-600
+                          ring-1
+                          ring-sky-100
+                          sm:text-[9px]
+                        "
+                      >
                         PAID SERVICE
                       </span>
 
                     </div>
 
-                    <h2 className="
-                      mt-1.5
-                      text-xl
-                      font-black
-                      tracking-tight
-                      text-slate-950
-                      sm:text-2xl
-                    ">
+                    <h2
+                      className="
+                        mt-1.5
+                        text-xl
+                        font-black
+                        tracking-tight
+                        text-slate-950
+                        sm:text-2xl
+                      "
+                    >
                       Custom Notes
                     </h2>
 
@@ -624,16 +662,18 @@ export default function ResourceHub() {
                 </div>
 
 
-                <p className="
-                  mt-4
-                  max-w-2xl
-                  text-xs
-                  leading-5
-                  text-slate-600
-                  sm:mt-5
-                  sm:text-sm
-                  sm:leading-6
-                ">
+                <p
+                  className="
+                    mt-4
+                    max-w-2xl
+                    text-xs
+                    leading-5
+                    text-slate-600
+                    sm:mt-5
+                    sm:text-sm
+                    sm:leading-6
+                  "
+                >
                   Need notes made specifically for your syllabus, subject,
                   topic, or learning goal? Get personalized notes prepared
                   according to your requirements.
@@ -641,51 +681,57 @@ export default function ResourceHub() {
 
 
                 {/* Small Features */}
-                <div className="
-                  mt-4
-                  flex
-                  flex-wrap
-                  gap-2
-                  sm:mt-5
-                  sm:gap-3
-                ">
+                <div
+                  className="
+                    mt-4
+                    flex
+                    flex-wrap
+                    gap-2
+                    sm:mt-5
+                    sm:gap-3
+                  "
+                >
 
-                  <span className="
-                    inline-flex
-                    items-center
-                    gap-1.5
-                    rounded-lg
-                    bg-slate-50
-                    px-2.5
-                    py-1.5
-                    text-[9px]
-                    font-semibold
-                    text-slate-600
-                    sm:rounded-xl
-                    sm:px-3
-                    sm:py-2
-                    sm:text-xs
-                  ">
+                  <span
+                    className="
+                      inline-flex
+                      items-center
+                      gap-1.5
+                      rounded-lg
+                      bg-slate-50
+                      px-2.5
+                      py-1.5
+                      text-[9px]
+                      font-semibold
+                      text-slate-600
+                      sm:rounded-xl
+                      sm:px-3
+                      sm:py-2
+                      sm:text-xs
+                    "
+                  >
                     <FileText className="h-3.5 w-3.5 text-sky-500" />
                     Personalized Content
                   </span>
 
-                  <span className="
-                    inline-flex
-                    items-center
-                    gap-1.5
-                    rounded-lg
-                    bg-slate-50
-                    px-2.5
-                    py-1.5
-                    text-[9px]
-                    font-semibold
-                    text-slate-600
-                    sm:rounded-xl
-                    sm:px-3
-                    sm:py-2
-                    sm:text-xs
-                  ">
+                  <span
+                    className="
+                      inline-flex
+                      items-center
+                      gap-1.5
+                      rounded-lg
+                      bg-slate-50
+                      px-2.5
+                      py-1.5
+                      text-[9px]
+                      font-semibold
+                      text-slate-600
+                      sm:rounded-xl
+                      sm:px-3
+                      sm:py-2
+                      sm:text-xs
+                    "
+                  >
                     <Sparkles className="h-3.5 w-3.5 text-sky-500" />
                     Based on Your Requirements
                   </span>
@@ -695,10 +741,7 @@ export default function ResourceHub() {
               </div>
 
 
-              {/* =================================================
-                  RIGHT CTA
-                  FIXED → /custom-notes
-              ================================================= */}
+              {/* RIGHT CTA */}
               <div className="shrink-0 lg:w-auto">
 
                 <a
@@ -746,15 +789,17 @@ export default function ResourceHub() {
                   />
                 </a>
 
-                <p className="
-                  mt-2
-                  text-center
-                  text-[9px]
-                  font-medium
-                  text-slate-400
-                  sm:text-[10px]
-                  lg:text-right
-                ">
+                <p
+                  className="
+                    mt-2
+                    text-center
+                    text-[9px]
+                    font-medium
+                    text-slate-400
+                    sm:text-[10px]
+                    lg:text-right
+                  "
+                >
                   Pricing depends on your requirements
                 </p>
 
@@ -849,22 +894,24 @@ export default function ResourceHub() {
           }}
         />
 
-        <span className="
-          flex
-          h-7
-          w-7
-          shrink-0
-          items-center
-          justify-center
-          rounded-full
-          bg-gradient-to-br
-          from-violet-500
-          to-purple-700
-          shadow-md
-          shadow-violet-500/30
-          sm:h-8
-          sm:w-8
-        ">
+        <span
+          className="
+            flex
+            h-7
+            w-7
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            bg-gradient-to-br
+            from-violet-500
+            to-purple-700
+            shadow-md
+            shadow-violet-500/30
+            sm:h-8
+            sm:w-8
+          "
+        >
           <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </span>
 
@@ -912,33 +959,37 @@ export default function ResourceHub() {
 
         <div className="mx-auto max-w-5xl">
 
-          <div className="
-            flex
-            flex-col
-            items-center
-            justify-between
-            gap-5
-            text-center
-            sm:flex-row
-            sm:text-left
-          ">
+          <div
+            className="
+              flex
+              flex-col
+              items-center
+              justify-between
+              gap-5
+              text-center
+              sm:flex-row
+              sm:text-left
+            "
+          >
 
             {/* Brand */}
             <div className="flex items-center gap-3">
 
-              <div className="
-                flex
-                h-9
-                w-9
-                shrink-0
-                items-center
-                justify-center
-                rounded-xl
-                bg-sky-50
-                text-sky-600
-                sm:h-10
-                sm:w-10
-              ">
+              <div
+                className="
+                  flex
+                  h-9
+                  w-9
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-sky-50
+                  text-sky-600
+                  sm:h-10
+                  sm:w-10
+                "
+              >
                 <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
 
@@ -956,19 +1007,21 @@ export default function ResourceHub() {
 
 
             {/* Footer Links */}
-            <div className="
-              flex
-              flex-wrap
-              items-center
-              justify-center
-              gap-x-4
-              gap-y-2
-              text-[10px]
-              font-semibold
-              text-slate-500
-              sm:gap-5
-              sm:text-xs
-            ">
+            <div
+              className="
+                flex
+                flex-wrap
+                items-center
+                justify-center
+                gap-x-4
+                gap-y-2
+                text-[10px]
+                font-semibold
+                text-slate-500
+                sm:gap-5
+                sm:text-xs
+              "
+            >
 
               <a
                 href="/"
@@ -1011,15 +1064,17 @@ export default function ResourceHub() {
 
 
           {/* Bottom */}
-          <div className="
-            mt-6
-            border-t
-            border-slate-100
-            pt-5
-            text-center
-            sm:mt-7
-            sm:pt-6
-          ">
+          <div
+            className="
+              mt-6
+              border-t
+              border-slate-100
+              pt-5
+              text-center
+              sm:mt-7
+              sm:pt-6
+            "
+          >
 
             <p className="text-[9px] leading-4 text-slate-400 sm:text-xs">
               © {new Date().getFullYear()} Devika Resources. All rights reserved.
@@ -1028,7 +1083,6 @@ export default function ResourceHub() {
           </div>
 
         </div>
-
       </footer>
 
     </div>
@@ -1040,37 +1094,47 @@ export default function ResourceHub() {
    FEATURE COMPONENT
 ========================================================= */
 
-function Feature({ icon: Icon, text, color, dark = false }) {
-
+function Feature({
+  icon: Icon,
+  text,
+  color,
+  dark = false,
+  href,
+}) {
   const iconColor =
     color === "violet"
       ? "text-violet-400"
       : "text-sky-500";
 
-  return (
-    <div
-      className={`
-        flex
-        items-center
-        gap-1.5
-        rounded-lg
-        px-2.5
-        py-2
-        text-[9px]
-        font-semibold
+  const className = `
+    flex
+    items-center
+    gap-1.5
+    rounded-lg
+    px-2.5
+    py-2
+    text-[9px]
+    font-semibold
+    transition-all
+    duration-200
+    sm:rounded-xl
+    sm:px-3
+    sm:py-3
+    sm:text-xs
+    ${
+      dark
+        ? "bg-white/5 text-slate-300 ring-1 ring-white/5"
+        : "bg-slate-50 text-slate-700"
+    }
+    ${
+      href
+        ? "cursor-pointer hover:bg-sky-50 hover:text-sky-700"
+        : ""
+    }
+  `;
 
-        sm:rounded-xl
-        sm:px-3
-        sm:py-3
-        sm:text-xs
-
-        ${
-          dark
-            ? "bg-white/5 text-slate-300 ring-1 ring-white/5"
-            : "bg-slate-50 text-slate-700"
-        }
-      `}
-    >
+  const content = (
+    <>
       <Icon
         className={`h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4 ${iconColor}`}
       />
@@ -1078,6 +1142,20 @@ function Feature({ icon: Icon, text, color, dark = false }) {
       <span className="truncate">
         {text}
       </span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a href={href} className={className}>
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div className={className}>
+      {content}
     </div>
   );
 }
