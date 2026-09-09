@@ -212,13 +212,13 @@ const FreeResources = () => {
 
                 {/* Download Button */}
                 <button
-                  onClick={() =>
-                    alert(
-                      "Free resource preview/download will be connected here."
-                    )
-                  }
-                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs font-bold text-white transition-all duration-300 hover:bg-sky-600 sm:mt-6 sm:px-5 sm:py-3.5 sm:text-sm"
-                >
+  onClick={() => {
+    if (resource.file) {
+      window.open(resource.file, "_blank", "noopener,noreferrer");
+    }
+  }}
+  className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs font-bold text-white transition-all duration-300 hover:bg-sky-600 sm:mt-6 sm:px-5 sm:py-3.5 sm:text-sm"
+>
                   <Download size={16} />
 
                   Get Free Resource
