@@ -114,7 +114,14 @@ const RESOURCE_CATEGORIES = [
    RESOURCE DATA
 ========================================================= */
 
+
+
 const RESOURCES = [
+
+  // =========================
+  // ₹99
+  // =========================
+
   {
     id: 0,
     icon: Code2,
@@ -125,6 +132,36 @@ const RESOURCES = [
       "A practical developer handbook covering programming fundamentals, OOP, coding problems, SQL, Git, REST APIs, web development, project interviews, and HR preparation.",
     level: "Beginner → Intermediate",
     format: "PDF",
+    price: "₹99",
+    amount: "99",
+    featured: false,
+  },
+
+  {
+    id: 13,
+    icon: Code2,
+    category: "interview",
+    tag: "INTERVIEW",
+    title: "React Interview Questions for Freshers",
+    description:
+      "10 important React interview questions covering props, state, Hooks, Virtual DOM, components, Context API, performance and other essential React concepts.",
+    level: "React Interview Prep",
+    format: "10 Interview Questions",
+    price: "₹99",
+    amount: "99",
+    featured: false,
+  },
+
+  {
+    id: 15,
+    icon: Code2,
+    category: "interview",
+    tag: "INTERVIEW",
+    title: "MERN Stack Interview Questions for Freshers",
+    description:
+      "10 important MERN Stack interview questions covering MongoDB, Express.js, React.js, Node.js, REST APIs, authentication and other essential MERN concepts.",
+    level: "MERN Interview Prep",
+    format: "10 Interview Questions",
     price: "₹99",
     amount: "99",
     featured: false,
@@ -160,50 +197,45 @@ const RESOURCES = [
     featured: true,
   },
 
-  {
-    id: 3,
-    icon: Terminal,
-    category: "interview",
-    tag: "INTERVIEW",
-    title: "Java 50 Interview Questions",
-    description:
-      "50 important Core Java and OOP interview questions explained in a simple and practical way.",
-    level: "Interview Prep",
-    format: "50 Interview Questions",
-    price: "₹149",
-    amount: "149",
-    featured: true,
-  },
+
+  // =========================
+  // ₹149
+  // =========================
 
   {
-    id: 10,
+    id: 14,
     icon: Code2,
     category: "interview",
     tag: "INTERVIEW",
-    title: "React 50 Interview Questions",
+    title: "React 20 Interview Questions",
     description:
-      "50 important React interview questions covering components, JSX, props, state, hooks, routing, API integration and practical React concepts.",
+      "20 important React interview questions covering JSX, components, props, state, Hooks, Virtual DOM, Context API, routing, API integration, performance and other essential React concepts.",
     level: "React Interview Prep",
-    format: "50 Interview Questions",
+    format: "20 Interview Questions",
     price: "₹149",
     amount: "149",
     featured: true,
   },
 
   {
-    id: 4,
-    icon: Database,
+    id: 16,
+    icon: Code2,
     category: "interview",
     tag: "INTERVIEW",
-    title: "SQL 50 Interview Questions",
+    title: "MERN 20 Interview Questions",
     description:
-      "50 frequently asked SQL interview questions covering queries, joins, constraints and database concepts.",
-    level: "Interview Prep",
-    format: "50 Interview Questions",
+      "20 important MERN Stack interview questions covering MongoDB, Express.js, React.js, Node.js, REST APIs, authentication, JWT, database integration, deployment and other essential MERN concepts.",
+    level: "MERN Interview Prep",
+    format: "20 Interview Questions",
     price: "₹149",
     amount: "149",
-    featured: false,
+    featured: true,
   },
+
+
+  // =========================
+  // ₹199
+  // =========================
 
   {
     id: 6,
@@ -220,6 +252,61 @@ const RESOURCES = [
     featured: false,
   },
 
+
+  // =========================
+  // ₹299 — 50 Interview Questions
+  // =========================
+
+  {
+    id: 3,
+    icon: Terminal,
+    category: "interview",
+    tag: "PREMIUM",
+    title: "Java 50 Interview Questions",
+    description:
+      "50 important Core Java and OOP interview questions explained in a simple and practical way.",
+    level: "Interview Prep",
+    format: "50 Interview Questions",
+    price: "₹299",
+    amount: "299",
+    featured: true,
+  },
+
+  {
+    id: 10,
+    icon: Code2,
+    category: "interview",
+    tag: "PREMIUM",
+    title: "React 50 Interview Questions",
+    description:
+      "50 important React interview questions covering components, JSX, props, state, Hooks, routing, API integration and practical React concepts.",
+    level: "React Interview Prep",
+    format: "50 Interview Questions",
+    price: "₹299",
+    amount: "299",
+    featured: true,
+  },
+
+  {
+    id: 4,
+    icon: Database,
+    category: "interview",
+    tag: "PREMIUM",
+    title: "SQL 50 Interview Questions",
+    description:
+      "50 frequently asked SQL interview questions covering queries, joins, constraints and database concepts.",
+    level: "Interview Prep",
+    format: "50 Interview Questions",
+    price: "₹299",
+    amount: "299",
+    featured: true,
+  },
+
+
+  // =========================
+  // ₹399 — Roadmaps
+  // =========================
+
   {
     id: 5,
     icon: Code2,
@@ -230,8 +317,8 @@ const RESOURCES = [
       "A practical step-by-step roadmap covering HTML, CSS, JavaScript, React, APIs, Git, projects, deployment and interview preparation.",
     level: "Beginner → Job Ready",
     format: "20–25 Page Roadmap",
-    price: "₹199",
-    amount: "199",
+    price: "₹399",
+    amount: "399",
     featured: true,
   },
 
@@ -245,25 +332,65 @@ const RESOURCES = [
       "A structured 22-page roadmap covering Core Java, OOPs, Spring Boot, databases, React and full-stack development.",
     level: "Beginner → Advanced",
     format: "22-Page Roadmap",
-    price: "₹249",
-    amount: "249",
+    price: "₹399",
+    amount: "399",
     featured: true,
   },
+
+
+  // =========================
+  // ₹499
+  // =========================
 
   {
     id: 8,
     icon: BriefcaseBusiness,
     category: "interview",
-    tag: "INTERVIEW",
-    title: " Java Full Stack Interview Pack",
+    tag: "PREMIUM",
+    title: "Java Full Stack Interview Pack",
     description:
       "A practical collection of frontend, backend, database and project-based interview questions.",
     level: "Job Preparation",
     format: "35–45 Page Interview Pack",
-    price: "₹299",
-    amount: "299",
+    price: "₹499",
+    amount: "499",
     featured: true,
   },
+
+  {
+    id: 11,
+    icon: Code2,
+    category: "notes",
+    tag: "PREMIUM",
+    title: "React.js Notes",
+    description:
+      "Complete React.js notes covering JSX, components, props, state, Hooks, forms, routing, API integration, Context API, performance, authentication and important React concepts.",
+    level: "Beginner → Intermediate",
+    format: "PDF Notes",
+    price: "₹499",
+    amount: "499",
+    featured: true,
+  },
+
+  {
+    id: 12,
+    icon: Layers3,
+    category: "notes",
+    tag: "PREMIUM",
+    title: "MERN Stack Developer Notes",
+    description:
+      "Complete MERN Stack notes covering MongoDB, Express.js, React.js, Node.js, REST APIs, authentication, JWT, API integration, security, deployment and full-stack development.",
+    level: "Beginner → Intermediate",
+    format: "PDF Notes",
+    price: "₹499",
+    amount: "499",
+    featured: true,
+  },
+
+
+  // =========================
+  // ₹2,999
+  // =========================
 
   {
     id: 9,
@@ -280,7 +407,15 @@ const RESOURCES = [
     featured: true,
     premium: true,
   },
+
 ];
+
+
+
+
+
+
+
 
 /* =========================================================
    ANIMATION

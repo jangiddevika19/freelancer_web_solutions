@@ -15,15 +15,60 @@ import Contact from "./pages/Contact";
 
 import Footer from "./components/layouts/Footer";
 
+// FREE RESOURCES
+import FreeResources from "./pages/FreeResources";
+
+// RESOURCE HUB
+import ResourceHub from "./pages/ResourceHub";
+
+// CUSTOM NOTES
+import CustomNotes from "./pages/CustomNotes";
+
+// DEVELOPER QUIZ
+import Quiz from "./pages/Quiz";
+
 function App() {
   // Intro sirf fresh browser session me ek baar chalega
   const [showIntro, setShowIntro] = useState(() => {
     return sessionStorage.getItem("devika_intro_seen") !== "true";
   });
 
-  // ------------------------------------------
-  // RESOURCES PAGE
-  // ------------------------------------------
+  // =====================================================
+  // RESOURCE HUB
+  // =====================================================
+  if (window.location.pathname === "/resource-hub") {
+    return (
+      <div className="min-h-screen bg-white">
+        <ResourceHub />
+      </div>
+    );
+  }
+
+  // =====================================================
+  // CUSTOM NOTES PAGE
+  // =====================================================
+  if (window.location.pathname === "/custom-notes") {
+    return (
+      <div className="min-h-screen bg-white">
+        <CustomNotes />
+      </div>
+    );
+  }
+
+  // =====================================================
+  // DEVELOPER QUIZ PAGE
+  // =====================================================
+  if (window.location.pathname === "/quiz") {
+    return (
+      <div className="min-h-screen bg-white">
+        <Quiz />
+      </div>
+    );
+  }
+
+  // =====================================================
+  // PREMIUM RESOURCES PAGE
+  // =====================================================
   if (window.location.pathname === "/resources") {
     return (
       <div className="min-h-screen bg-white">
@@ -32,9 +77,20 @@ function App() {
     );
   }
 
-  // ------------------------------------------
+  // =====================================================
+  // FREE RESOURCES PAGE
+  // =====================================================
+  if (window.location.pathname === "/free-resources") {
+    return (
+      <div className="min-h-screen bg-white">
+        <FreeResources />
+      </div>
+    );
+  }
+
+  // =====================================================
   // MAIN WEBSITE
-  // ------------------------------------------
+  // =====================================================
   return (
     <>
       {/* ================= NAVBAR ================= */}
@@ -55,6 +111,7 @@ function App() {
 
       {/* ================= MAIN WEBSITE ================= */}
       <main>
+
         {/* HERO */}
         <section id="home">
           <Hero ready={!showIntro} />
@@ -84,14 +141,14 @@ function App() {
         <section id="contact">
           <Contact />
         </section>
+
       </main>
 
       {/* =================================================
           FLOATING RESOURCES BUTTON
       ================================================= */}
-
       <motion.a
-        href="/resources"
+        href="/resource-hub"
         initial={{
           opacity: 0,
           x: 80,
@@ -145,6 +202,7 @@ function App() {
           cursor-pointer
         "
       >
+
         {/* Glow */}
         <motion.span
           className="
@@ -200,6 +258,7 @@ function App() {
 
         {/* Text */}
         <div className="flex flex-col leading-none">
+
           <span
             className="
               flex
@@ -226,6 +285,7 @@ function App() {
           >
             Resources
           </span>
+
         </div>
 
         {/* Arrow */}
@@ -256,6 +316,7 @@ function App() {
         >
           <ArrowUpRight className="h-3.5 w-3.5" />
         </motion.span>
+
       </motion.a>
 
       {/* ================= FOOTER ================= */}
