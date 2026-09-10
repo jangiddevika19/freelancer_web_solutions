@@ -115,7 +115,6 @@ const RESOURCE_CATEGORIES = [
 ========================================================= */
 
 
-
 const RESOURCES = [
 
   // =========================
@@ -319,7 +318,7 @@ const RESOURCES = [
 
 
   // =========================
-  // ₹399 — Roadmaps
+  // ₹399
   // =========================
 
   {
@@ -354,41 +353,6 @@ const RESOURCES = [
 
 
   // =========================
-  // ₹499
-  // =========================
-
-  {
-    id: 11,
-    icon: Code2,
-    category: "notes",
-    tag: "PREMIUM",
-    title: "React.js Notes",
-    description:
-      "Complete React.js notes covering JSX, components, props, state, Hooks, forms, routing, API integration, Context API, performance, authentication and important React concepts.",
-    level: "Beginner → Intermediate",
-    format: "PDF Notes",
-    price: "₹499",
-    amount: "499",
-    featured: true,
-  },
-
-  {
-    id: 12,
-    icon: Layers3,
-    category: "notes",
-    tag: "PREMIUM",
-    title: "MERN Stack Developer Notes",
-    description:
-      "Complete MERN Stack notes covering MongoDB, Express.js, React.js, Node.js, REST APIs, authentication, JWT, API integration, security, deployment and full-stack development.",
-    level: "Beginner → Intermediate",
-    format: "PDF Notes",
-    price: "₹499",
-    amount: "499",
-    featured: true,
-  },
-
-
-  // =========================
   // ₹699
   // =========================
 
@@ -405,6 +369,43 @@ const RESOURCES = [
     price: "₹699",
     amount: "699",
     featured: true,
+  },
+
+
+  // =========================
+  // ₹1,999
+  // =========================
+
+  {
+    id: 11,
+    icon: Code2,
+    category: "notes",
+    tag: "PREMIUM",
+    title: "React.js Notes",
+    description:
+      "Complete React.js notes covering JSX, components, props, state, Hooks, forms, routing, API integration, Context API, performance, authentication, debugging, project structure, deployment and important React concepts.",
+    level: "Beginner → Advanced",
+    format: "90-Page Premium PDF Notes",
+    price: "₹1,999",
+    amount: "1999",
+    featured: true,
+    premium: true,
+  },
+
+  {
+    id: 12,
+    icon: Layers3,
+    category: "notes",
+    tag: "PREMIUM",
+    title: "MERN Stack Developer Notes",
+    description:
+      "Complete MERN Stack notes covering MongoDB, Express.js, React.js, Node.js, REST APIs, authentication, JWT, API integration, security, deployment and full-stack development.",
+    level: "Beginner → Advanced",
+    format: "78-Page Premium PDF Notes",
+    price: "₹1,999",
+    amount: "1999",
+    featured: true,
+    premium: true,
   },
 
 
@@ -429,8 +430,6 @@ const RESOURCES = [
   },
 
 ];
-
-
 
 
 
