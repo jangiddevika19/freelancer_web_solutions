@@ -43,6 +43,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <ResourceHub />
+
+        {/* ONLINE VISITORS */}
+        <OnlineVisitors />
       </div>
     );
   }
@@ -54,6 +57,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <CustomNotes />
+
+        {/* ONLINE VISITORS */}
+        <OnlineVisitors />
       </div>
     );
   }
@@ -65,6 +71,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <Quiz />
+
+        {/* ONLINE VISITORS */}
+        <OnlineVisitors />
       </div>
     );
   }
@@ -76,6 +85,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <Resources />
+
+        {/* ONLINE VISITORS */}
+        <OnlineVisitors />
       </div>
     );
   }
@@ -87,6 +99,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <FreeResources />
+
+        {/* ONLINE VISITORS */}
+        <OnlineVisitors />
       </div>
     );
   }
@@ -98,6 +113,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <Contact />
+
+        {/* ONLINE VISITORS */}
+        <OnlineVisitors />
       </div>
     );
   }
@@ -125,7 +143,6 @@ function App() {
 
       {/* ================= MAIN WEBSITE ================= */}
       <main>
-
         {/* HERO */}
         <section id="home">
           <Hero ready={!showIntro} />
@@ -155,7 +172,6 @@ function App() {
         <section id="contact">
           <Contact />
         </section>
-
       </main>
 
       {/* =================================================
@@ -216,7 +232,6 @@ function App() {
           cursor-pointer
         "
       >
-
         {/* Glow */}
         <motion.span
           className="
@@ -272,7 +287,6 @@ function App() {
 
         {/* Text */}
         <div className="flex flex-col leading-none">
-
           <span
             className="
               flex
@@ -299,7 +313,6 @@ function App() {
           >
             Resources
           </span>
-
         </div>
 
         {/* Arrow */}
@@ -330,7 +343,6 @@ function App() {
         >
           <ArrowUpRight className="h-3.5 w-3.5" />
         </motion.span>
-
       </motion.a>
 
       {/* ================= ONLINE VISITORS ================= */}
