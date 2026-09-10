@@ -123,21 +123,6 @@ const RESOURCES = [
   // =========================
 
   {
-    id: 0,
-    icon: Code2,
-    category: "interview",
-    tag: "PREMIUM",
-    title: "Developer Interview & Coding Resource",
-    description:
-      "A practical developer handbook covering programming fundamentals, OOP, coding problems, SQL, Git, REST APIs, web development, project interviews, and HR preparation.",
-    level: "Beginner → Intermediate",
-    format: "PDF",
-    price: "₹99",
-    amount: "99",
-    featured: false,
-  },
-
-  {
     id: 13,
     icon: Code2,
     category: "interview",
@@ -161,6 +146,21 @@ const RESOURCES = [
     description:
       "10 important MERN Stack interview questions covering MongoDB, Express.js, React.js, Node.js, REST APIs, authentication and other essential MERN concepts.",
     level: "MERN Interview Prep",
+    format: "10 Interview Questions",
+    price: "₹99",
+    amount: "99",
+    featured: false,
+  },
+
+  {
+    id: 17,
+    icon: Code2,
+    category: "interview",
+    tag: "INTERVIEW",
+    title: "Python Interview Questions for Freshers",
+    description:
+      "10 important Python interview questions covering Python basics, data types, variables, functions, OOP, exception handling and other essential Python concepts.",
+    level: "Python Interview Prep",
     format: "10 Interview Questions",
     price: "₹99",
     amount: "99",
@@ -238,6 +238,21 @@ const RESOURCES = [
   // =========================
 
   {
+    id: 0,
+    icon: Code2,
+    category: "interview",
+    tag: "PREMIUM",
+    title: "Developer Interview & Coding Resource",
+    description:
+      "A practical developer handbook covering programming fundamentals, OOP, coding problems, SQL, Git, REST APIs, web development, project interviews, and HR preparation.",
+    level: "Beginner → Intermediate",
+    format: "PDF",
+    price: "₹199",
+    amount: "199",
+    featured: false,
+  },
+
+  {
     id: 6,
     icon: BookOpen,
     category: "notes",
@@ -254,7 +269,7 @@ const RESOURCES = [
 
 
   // =========================
-  // ₹299 — 50 Interview Questions
+  // ₹299
   // =========================
 
   {
@@ -343,21 +358,6 @@ const RESOURCES = [
   // =========================
 
   {
-    id: 8,
-    icon: BriefcaseBusiness,
-    category: "interview",
-    tag: "PREMIUM",
-    title: "Java Full Stack Interview Pack",
-    description:
-      "A practical collection of frontend, backend, database and project-based interview questions.",
-    level: "Job Preparation",
-    format: "35–45 Page Interview Pack",
-    price: "₹499",
-    amount: "499",
-    featured: true,
-  },
-
-  {
     id: 11,
     icon: Code2,
     category: "notes",
@@ -389,6 +389,26 @@ const RESOURCES = [
 
 
   // =========================
+  // ₹699
+  // =========================
+
+  {
+    id: 8,
+    icon: BriefcaseBusiness,
+    category: "interview",
+    tag: "PREMIUM",
+    title: "Java Full Stack Interview Pack",
+    description:
+      "A practical collection of frontend, backend, database and project-based interview questions.",
+    level: "Job Preparation",
+    format: "35–45 Page Interview Pack",
+    price: "₹699",
+    amount: "699",
+    featured: true,
+  },
+
+
+  // =========================
   // ₹2,999
   // =========================
 
@@ -409,9 +429,6 @@ const RESOURCES = [
   },
 
 ];
-
-
-
 
 
 
