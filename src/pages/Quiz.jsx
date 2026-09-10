@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -17,7 +17,8 @@ import {
   Brain,
   Terminal,
   ChevronRight,
-} from "lucide-react";
+  Lightbulb,
+  } from "lucide-react";
 
 /* =========================================================
    QUIZ DATA
@@ -708,6 +709,109 @@ const topics = [
   },
 ];
 
+
+/* =========================================================
+   CODING PRACTICE
+========================================================= */
+
+const codingPractice = [
+  {
+    title: "Reverse a String",
+    category: "Beginner",
+    question: 'Write a program to reverse the string "hello".',
+    example: "Input: hello  →  Output: olleh",
+    hint: "Think about reading the characters from the end to the beginning.",
+    solution: `String str = "hello";
+String reversed = new StringBuilder(str).reverse().toString();
+System.out.println(reversed);`,
+  },
+  {
+    title: "Palindrome Check",
+    category: "Beginner",
+    question: 'Check whether the word "madam" is a palindrome.',
+    example: "Input: madam  →  Output: Palindrome",
+    hint: "Compare the original value with its reversed value.",
+    solution: `String str = "madam";
+String reversed = new StringBuilder(str).reverse().toString();
+
+if (str.equals(reversed)) {
+    System.out.println("Palindrome");
+} else {
+    System.out.println("Not Palindrome");
+}` ,
+  },
+  {
+    title: "Factorial of a Number",
+    category: "Beginner",
+    question: "Find the factorial of 5.",
+    example: "5! = 5 × 4 × 3 × 2 × 1",
+    hint: "Multiply all positive integers from 1 up to the given number.",
+    solution: `int n = 5;
+int factorial = 1;
+
+for (int i = 1; i <= n; i++) {
+    factorial *= i;
+}
+
+System.out.println(factorial);`,
+  },
+  {
+    title: "Fibonacci Series",
+    category: "Beginner",
+    question: "Print the first 6 numbers of the Fibonacci series.",
+    example: "The series starts with 0, 1 and each next number is the sum of the previous two.",
+    hint: "Start with 0 and 1, then keep adding the last two numbers.",
+    solution: `int n = 6;
+int a = 0, b = 1;
+
+for (int i = 0; i < n; i++) {
+    System.out.print(a + " ");
+    int next = a + b;
+    a = b;
+    b = next;
+}`,
+  },
+  {
+    title: "Prime Number Check",
+    category: "Beginner",
+    question: "Check whether 17 is a prime number.",
+    example: "A prime number has exactly two positive factors: 1 and itself.",
+    hint: "Check whether any number other than 1 and the number itself divides it exactly.",
+    solution: `int n = 17;
+boolean isPrime = n > 1;
+
+for (int i = 2; i <= Math.sqrt(n); i++) {
+    if (n % i == 0) {
+        isPrime = false;
+        break;
+    }
+}
+
+System.out.println(isPrime ? "Prime" : "Not Prime");`,
+  },
+  {
+    title: "Second Largest Element",
+    category: "Interview",
+    question: "Find the second largest value in [10, 5, 8, 20, 15].",
+    example: "Input: [10, 5, 8, 20, 15]  →  Output: 15",
+    hint: "Keep track of the largest and second-largest values while scanning the array.",
+    solution: `int[] numbers = {10, 5, 8, 20, 15};
+int largest = Integer.MIN_VALUE;
+int secondLargest = Integer.MIN_VALUE;
+
+for (int number : numbers) {
+    if (number > largest) {
+        secondLargest = largest;
+        largest = number;
+    } else if (number > secondLargest && number != largest) {
+        secondLargest = number;
+    }
+}
+
+System.out.println(secondLargest);`,
+  },
+];
+
 /* =========================================================
    MAIN COMPONENT
 ========================================================= */
@@ -722,6 +826,39 @@ export default function Quiz() {
   const [score, setScore] = useState(0);
 
   const [showResult, setShowResult] = useState(false);
+
+  const [selectedPractice, setSelectedPractice] = useState(null);
+  const [practiceQuestion, setPracticeQuestion] = useState(0);
+  const [showPracticeHint, setShowPracticeHint] = useState(false);
+  const [showPracticeAnswer, setShowPracticeAnswer] = useState(false);
+  const [practiceCompleted, setPracticeCompleted] = useState(false);
+
+  /* =======================================================
+     OPEN CODING PRACTICE FROM RESOURCE HUB
+     /quiz?mode=practice
+  ======================================================= */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+
+    if (mode !== "practice") return;
+
+    const scrollToPractice = () => {
+      const section = document.getElementById("coding-practice");
+
+      if (section) {
+        section.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    };
+
+    // Wait for the topic-selection screen and Coding Practice section to render.
+    const timer = setTimeout(scrollToPractice, 150);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   /* =======================================================
      SELECT TOPIC
@@ -821,12 +958,614 @@ export default function Quiz() {
   };
 
   /* =======================================================
+     START CODING PRACTICE
+  ======================================================= */
+
+  const handlePracticeSelect = (problem) => {
+    setSelectedPractice(problem);
+    setPracticeQuestion(0);
+    setShowPracticeHint(false);
+    setPracticeCompleted(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  /* =======================================================
+     NEXT PRACTICE QUESTION
+  ======================================================= */
+
+  const handlePracticeNext = () => {
+    if (!selectedPractice) return;
+
+    if (practiceQuestion === codingPractice.length - 1) {
+      setPracticeCompleted(true);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      return;
+    }
+
+    setPracticeQuestion((prev) => prev + 1);
+    setShowPracticeHint(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  /* =======================================================
+     PREVIOUS PRACTICE QUESTION
+  ======================================================= */
+
+  const handlePracticePrevious = () => {
+    if (practiceQuestion === 0) return;
+
+    setPracticeQuestion((prev) => prev - 1);
+    setShowPracticeHint(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  /* =======================================================
+     EXIT CODING PRACTICE
+  ======================================================= */
+
+  const handleExitPractice = () => {
+    setSelectedPractice(null);
+    setPracticeQuestion(0);
+    setShowPracticeHint(false);
+    setPracticeCompleted(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  /* =======================================================
      BACK TO RESOURCES
   ======================================================= */
 
   const handleBackToResources = () => {
     window.location.href = "/resource-hub";
   };
+
+  /* =======================================================
+     CODING PRACTICE SCREEN
+  ======================================================= */
+
+  if (selectedPractice) {
+    const currentPractice = codingPractice[practiceQuestion];
+    const practiceTotal = codingPractice.length;
+    const practiceProgress =
+      ((practiceQuestion + 1) / practiceTotal) * 100;
+
+    if (practiceCompleted) {
+      return (
+        <div className="min-h-screen bg-slate-50 text-slate-900">
+
+          {/* HEADER */}
+          <header className="sticky top-0 z-[100] border-b border-slate-200 bg-white/95 backdrop-blur-xl">
+            <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:h-16 sm:px-6">
+
+              <button
+                type="button"
+                onClick={handleExitPractice}
+                className="
+                  inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5
+                  text-[11px] font-semibold text-slate-600 transition
+                  hover:bg-sky-50 hover:text-sky-600
+                  sm:gap-2 sm:px-3 sm:py-2 sm:text-sm
+                "
+              >
+                <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                Back to Practice
+              </button>
+
+              <div className="flex items-center gap-2">
+                <div
+                  className="
+                    flex h-8 w-8 items-center justify-center rounded-xl
+                    bg-gradient-to-br from-sky-500 to-blue-700 text-white
+                    shadow-md shadow-sky-500/20 sm:h-9 sm:w-9
+                  "
+                >
+                  <Code2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                </div>
+
+                <span className="text-[11px] font-bold text-slate-900 sm:text-sm">
+                  Coding Practice
+                </span>
+              </div>
+
+              <div className="w-6 sm:w-28" />
+            </div>
+          </header>
+
+          {/* RESULT */}
+          <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-14">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mx-auto max-w-lg text-center"
+            >
+              <div
+                className="
+                  rounded-3xl border border-slate-200 bg-white p-6
+                  shadow-[0_15px_50px_rgba(15,23,42,0.08)] sm:p-10
+                "
+              >
+                <div
+                  className="
+                    mx-auto flex h-20 w-20 items-center justify-center
+                    rounded-3xl bg-gradient-to-br from-sky-400 to-blue-700
+                    text-white shadow-xl shadow-sky-500/20
+                  "
+                >
+                  <CheckCircle2 className="h-9 w-9" />
+                </div>
+
+                <p className="mt-6 text-[10px] font-bold uppercase tracking-wider text-sky-500 sm:text-xs">
+                  Practice Completed
+                </p>
+
+                <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-4xl">
+                  Great Work!
+                </h1>
+
+                <p className="mt-3 text-xs leading-5 text-slate-500 sm:text-sm sm:leading-6">
+                  You completed all {practiceTotal} coding practice problems.
+                  Keep practicing to improve your problem-solving skills.
+                </p>
+
+                <div className="my-7 rounded-2xl bg-slate-50 p-5 sm:my-8 sm:p-7">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Problems Completed
+                  </p>
+
+                  <div className="mt-2 text-5xl font-black text-slate-950 sm:text-6xl">
+                    {practiceTotal}
+                  </div>
+
+                  <p className="mt-2 text-xs font-semibold text-sky-600 sm:text-sm">
+                    Coding Challenges
+                  </p>
+                </div>
+
+                <p className="text-xs leading-5 text-slate-500 sm:text-sm sm:leading-6">
+                  Try solving these problems in your preferred programming
+                  language and compare different approaches.
+                </p>
+
+                <div className="mt-6 flex flex-col gap-2.5 sm:mt-8">
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPracticeQuestion(0);
+                      setShowPracticeHint(false);
+                      setShowPracticeAnswer(false);
+                      setPracticeCompleted(false);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    className="
+                      flex w-full items-center justify-center gap-2 rounded-xl
+                      bg-slate-950 px-4 py-3 text-xs font-bold text-white
+                      transition hover:bg-slate-800 sm:py-3.5 sm:text-sm
+                    "
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    Practice Again
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleBackToResources}
+                    className="
+                      flex w-full items-center justify-center gap-2 rounded-xl
+                      border border-slate-200 bg-white px-4 py-3 text-xs
+                      font-bold text-slate-700 transition hover:bg-slate-50
+                      sm:py-3.5 sm:text-sm
+                    "
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Resources
+                  </button>
+
+                </div>
+              </div>
+            </motion.div>
+          </main>
+
+          <footer className="border-t border-slate-200 bg-white px-4 py-7 sm:px-6 sm:py-9">
+            <div className="mx-auto max-w-5xl text-center">
+              <p className="text-[9px] leading-4 text-slate-400 sm:text-xs">
+                © {new Date().getFullYear()} Devika Resources.
+                All rights reserved.
+              </p>
+            </div>
+          </footer>
+
+        </div>
+      );
+    }
+
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-900">
+
+        {/* HEADER */}
+        <header className="sticky top-0 z-[100] border-b border-slate-200 bg-white/95 backdrop-blur-xl">
+          <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:h-16 sm:px-6">
+
+            <button
+              type="button"
+              onClick={handleExitPractice}
+              className="
+                inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5
+                text-[11px] font-semibold text-slate-600 transition
+                hover:bg-sky-50 hover:text-sky-600
+                sm:gap-2 sm:px-3 sm:py-2 sm:text-sm
+              "
+            >
+              <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              Back to Practice
+            </button>
+
+            <div className="flex items-center gap-2">
+              <div
+                className="
+                  flex h-8 w-8 items-center justify-center rounded-xl
+                  bg-gradient-to-br from-sky-500 to-blue-700 text-white
+                  shadow-md shadow-sky-500/20 sm:h-9 sm:w-9
+                "
+              >
+                <Code2 className="h-4 w-4 sm:h-5 sm:w-5" />
+              </div>
+
+              <span className="text-[11px] font-bold text-slate-900 sm:text-sm">
+                Coding Practice
+              </span>
+            </div>
+
+            <div className="w-6 sm:w-28" />
+          </div>
+        </header>
+
+        {/* MAIN */}
+        <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-14">
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+
+            {/* TITLE */}
+            <div className="text-center">
+
+              <div
+                className="
+                  mx-auto inline-flex items-center gap-2 rounded-full
+                  border border-sky-200 bg-white px-3 py-1.5 text-[9px]
+                  font-bold uppercase tracking-wide text-sky-600 shadow-sm
+                  sm:px-4 sm:py-2 sm:text-xs
+                "
+              >
+                <Code2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                Coding Practice
+              </div>
+
+              <h1
+                className="
+                  mt-4 text-3xl font-black tracking-tight text-slate-950
+                  sm:text-5xl
+                "
+              >
+                Solve &{" "}
+                <span
+                  className="
+                    bg-gradient-to-r from-sky-500 to-blue-700
+                    bg-clip-text text-transparent
+                  "
+                >
+                  Practice
+                </span>
+              </h1>
+
+              <p
+                className="
+                  mx-auto mt-3 max-w-xl text-xs leading-5 text-slate-500
+                  sm:text-sm sm:leading-6
+                "
+              >
+                Work through each coding problem step by step and strengthen
+                your logic before interviews.
+              </p>
+
+            </div>
+
+            {/* PROGRESS */}
+            <div className="mt-7 sm:mt-10">
+
+              <div
+                className="
+                  mb-2 flex items-center justify-between text-[10px]
+                  font-bold text-slate-500 sm:text-xs
+                "
+              >
+                <span>
+                  Problem {practiceQuestion + 1} of {practiceTotal}
+                </span>
+
+                <span>{Math.round(practiceProgress)}%</span>
+              </div>
+
+              <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                <motion.div
+                  className="
+                    h-full rounded-full bg-gradient-to-r
+                    from-sky-400 to-blue-600
+                  "
+                  animate={{ width: `${practiceProgress}%` }}
+                  transition={{ duration: 0.4 }}
+                />
+              </div>
+
+            </div>
+
+            {/* PRACTICE CARD */}
+            <motion.div
+              key={currentPractice.title}
+              initial={{ opacity: 0, x: 15 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="
+                mt-5 rounded-2xl border border-slate-200 bg-white p-4
+                shadow-[0_12px_40px_rgba(15,23,42,0.06)]
+                sm:mt-7 sm:rounded-3xl sm:p-7
+              "
+            >
+
+              {/* TOP ROW */}
+              <div className="flex items-start justify-between gap-3">
+
+                <div className="flex items-center gap-3">
+
+                  <div
+                    className="
+                      flex h-10 w-10 shrink-0 items-center justify-center
+                      rounded-xl bg-sky-50 text-sky-600 sm:h-12 sm:w-12
+                    "
+                  >
+                    <Code2 className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </div>
+
+                  <div>
+                    <span
+                      className="
+                        rounded-full bg-sky-50 px-2.5 py-1 text-[9px]
+                        font-bold text-sky-600
+                      "
+                    >
+                      {currentPractice.category}
+                    </span>
+
+                    <h2 className="mt-2 text-base font-black text-slate-950 sm:text-xl">
+                      {currentPractice.title}
+                    </h2>
+                  </div>
+
+                </div>
+
+                <span className="text-[9px] font-bold text-slate-400 sm:text-xs">
+                  #{practiceQuestion + 1}
+                </span>
+
+              </div>
+
+              {/* QUESTION */}
+              <div className="mt-6">
+
+                <p className="text-[9px] font-bold uppercase tracking-wider text-sky-500 sm:text-xs">
+                  Problem
+                </p>
+
+                <h3
+                  className="
+                    mt-2 text-base font-black leading-6 text-slate-950
+                    sm:text-xl sm:leading-8
+                  "
+                >
+                  {currentPractice.question}
+                </h3>
+
+              </div>
+
+              {/* EXAMPLE */}
+              <div className="mt-5 rounded-xl bg-slate-50 p-4 sm:p-5">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400 sm:text-xs">
+                  Example
+                </p>
+
+                <p className="mt-2 text-xs font-semibold leading-5 text-slate-700 sm:text-sm sm:leading-6">
+                  {currentPractice.example}
+                </p>
+              </div>
+
+              {/* HINT */}
+              <div className="mt-3">
+
+                <button
+                  type="button"
+                  onClick={() => setShowPracticeHint((prev) => !prev)}
+                  className="
+                    inline-flex items-center gap-2 rounded-xl border
+                    border-amber-200 bg-amber-50 px-3 py-2 text-[10px]
+                    font-bold text-amber-700 transition hover:bg-amber-100
+                    sm:px-4 sm:py-2.5 sm:text-xs
+                  "
+                >
+                  <Lightbulb className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  {showPracticeHint ? "Hide Hint" : "Show Hint"}
+                </button>
+
+                <AnimatePresence>
+                  {showPracticeHint && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, y: -5 }}
+                      animate={{ opacity: 1, height: "auto", y: 0 }}
+                      exit={{ opacity: 0, height: 0, y: -5 }}
+                      className="
+                        mt-3 overflow-hidden rounded-xl border
+                        border-amber-100 bg-amber-50 p-4
+                      "
+                    >
+                      <p className="text-[9px] font-bold uppercase tracking-wide text-amber-700 sm:text-xs">
+                        Hint
+                      </p>
+
+                      <p className="mt-1 text-xs leading-5 text-amber-800 sm:text-sm sm:leading-6">
+                        {currentPractice.hint}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+              </div>
+
+              {/* ANSWER / SOLUTION */}
+              <div className="mt-5">
+                <button
+                  type="button"
+                  onClick={() => setShowPracticeAnswer((prev) => !prev)}
+                  className="
+                    inline-flex w-full items-center justify-between gap-3 rounded-xl
+                    border border-emerald-200 bg-emerald-50 px-4 py-3
+                    text-left text-xs font-bold text-emerald-700 transition
+                    hover:bg-emerald-100 sm:text-sm
+                  "
+                >
+                  <span className="flex items-center gap-2">
+                    <Code2 className="h-4 w-4" />
+                    {showPracticeAnswer ? "Hide Answer" : "Show Answer"}
+                  </span>
+                  <span className="text-[10px] font-semibold text-emerald-600 sm:text-xs">
+                    Java Solution
+                  </span>
+                </button>
+
+                <AnimatePresence>
+                  {showPracticeAnswer && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, y: -5 }}
+                      animate={{ opacity: 1, height: "auto", y: 0 }}
+                      exit={{ opacity: 0, height: 0, y: -5 }}
+                      className="mt-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-950"
+                    >
+                      <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400 sm:text-xs">
+                          Answer / Solution
+                        </p>
+                        <span className="text-[9px] font-semibold text-sky-400 sm:text-xs">
+                          Java
+                        </span>
+                      </div>
+
+                      <pre className="overflow-x-auto p-4 text-left text-[11px] leading-5 text-slate-100 sm:p-5 sm:text-xs sm:leading-6">
+                        <code>{currentPractice.solution}</code>
+                      </pre>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* NOTE */}
+              <div
+                className="
+                  mt-5 rounded-xl border border-sky-100 bg-sky-50/60
+                  p-4
+                "
+              >
+                <p className="text-[10px] font-semibold leading-5 text-slate-500 sm:text-xs">
+                  Try solving it yourself first. You can write the solution
+                  in Java, Python, JavaScript or any language you prefer.
+                </p>
+              </div>
+
+              {/* NAVIGATION */}
+              <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
+
+                <button
+                  type="button"
+                  onClick={handlePracticePrevious}
+                  disabled={practiceQuestion === 0}
+                  className={`
+                    flex flex-1 items-center justify-center gap-2 rounded-xl
+                    border px-4 py-3 text-xs font-bold transition
+                    sm:py-3.5 sm:text-sm
+                    ${
+                      practiceQuestion === 0
+                        ? "cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300"
+                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    }
+                  `}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Previous
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handlePracticeNext}
+                  className="
+                    flex flex-1 items-center justify-center gap-2 rounded-xl
+                    bg-slate-950 px-4 py-3 text-xs font-bold text-white
+                    transition hover:bg-slate-800 sm:py-3.5 sm:text-sm
+                  "
+                >
+                  {practiceQuestion === practiceTotal - 1
+                    ? "Finish Practice"
+                    : "Next Problem"}
+
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+
+              </div>
+
+            </motion.div>
+
+            {/* FOOT NOTE */}
+            <div className="mt-4 text-center">
+              <p className="text-[9px] font-semibold text-slate-400 sm:text-xs">
+                {practiceTotal} coding problems • Step-by-step practice
+              </p>
+            </div>
+
+          </motion.div>
+
+        </main>
+
+        {/* FOOTER */}
+        <footer className="border-t border-slate-200 bg-white px-4 py-7 sm:px-6 sm:py-9">
+          <div className="mx-auto max-w-5xl text-center">
+            <p className="text-[9px] leading-4 text-slate-400 sm:text-xs">
+              © {new Date().getFullYear()} Devika Resources.
+              All rights reserved.
+            </p>
+          </div>
+        </footer>
+
+      </div>
+    );
+  }
 
   /* =======================================================
      TOPIC SELECTION SCREEN
@@ -1182,6 +1921,137 @@ export default function Quiz() {
               will be shown at the end.
             </p>
           </div>
+
+
+          {/* CODING PRACTICE */}
+          <section
+            id="coding-practice"
+            className="mx-auto mt-10 max-w-5xl scroll-mt-24 sm:mt-14"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.5 }}
+              className="text-center"
+            >
+              <div
+                className="
+                  mx-auto inline-flex items-center gap-2 rounded-full
+                  border border-slate-200 bg-white px-3 py-1.5
+                  text-[9px] font-bold uppercase tracking-wide text-slate-600
+                  shadow-sm sm:px-4 sm:py-2 sm:text-xs
+                "
+              >
+                <Code2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                Coding Practice
+              </div>
+
+              <h2
+                className="
+                  mt-3 text-2xl font-black tracking-tight text-slate-950
+                  sm:text-3xl
+                "
+              >
+                Practice Before Your{" "}
+                <span
+                  className="
+                    bg-gradient-to-r from-sky-500 to-blue-700
+                    bg-clip-text text-transparent
+                  "
+                >
+                  Interview
+                </span>
+              </h2>
+
+              <p
+                className="
+                  mx-auto mt-2 max-w-2xl text-xs leading-5 text-slate-500
+                  sm:text-sm sm:leading-6
+                "
+              >
+                Solve these coding problems to strengthen your logic,
+                problem-solving skills and interview preparation.
+              </p>
+            </motion.div>
+
+            <div className="mt-7 grid grid-cols-1 gap-3 sm:mt-9 sm:grid-cols-2 lg:grid-cols-3">
+              {codingPractice.map((problem, index) => (
+                <motion.button
+                  type="button"
+                  onClick={() => handlePracticeSelect(problem)}
+                  key={problem.title}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 * index, duration: 0.4 }}
+                  className="
+                    group w-full text-left rounded-2xl border border-slate-200 bg-white p-4
+                    shadow-[0_10px_35px_rgba(15,23,42,0.05)]
+                    transition-all duration-200
+                    hover:-translate-y-1 hover:border-sky-300
+                    hover:shadow-[0_15px_40px_rgba(14,165,233,0.10)]
+                    sm:p-5
+                  "
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="
+                        flex h-10 w-10 shrink-0 items-center justify-center
+                        rounded-xl bg-sky-50 text-sky-600
+                        transition group-hover:bg-sky-500 group-hover:text-white
+                      "
+                    >
+                      <Code2 className="h-4.5 w-4.5" />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-sm font-black text-slate-950">
+                          {problem.title}
+                        </h3>
+
+                        <span
+                          className="
+                            rounded-full bg-slate-100 px-2 py-0.5
+                            text-[8px] font-bold text-slate-500
+                            sm:text-[9px]
+                          "
+                        >
+                          {problem.category}
+                        </span>
+                      </div>
+
+                      <p
+                        className="
+                          mt-2 text-[10px] font-medium leading-5 text-slate-500
+                          sm:text-xs sm:leading-5
+                        "
+                      >
+                        {problem.question}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                    <span className="text-[10px] font-bold text-sky-600">Open Problem</span>
+                    <ChevronRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-1 group-hover:text-sky-600" />
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+
+
+            <div
+              className="
+                mt-6 rounded-2xl border border-sky-100 bg-sky-50/60
+                px-4 py-4 text-center sm:px-6
+              "
+            >
+              <p className="text-[10px] font-semibold leading-5 text-slate-500 sm:text-xs">
+                💡 Tip: Try solving each problem yourself first, then compare
+                your approach with other solutions.
+              </p>
+            </div>
+          </section>
 
         </main>
 

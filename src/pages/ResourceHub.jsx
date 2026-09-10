@@ -256,6 +256,7 @@ export default function ResourceHub() {
                   icon={FileText}
                   text="Free Notes"
                   color="sky"
+                  href="/free-resources"
                 />
 
                 {/* DIRECT QUIZ LINK */}
@@ -270,13 +271,14 @@ export default function ResourceHub() {
                   icon={Zap}
                   text="Practice"
                   color="sky"
+                  href="/quiz?mode=practice"
                 />
 
-                <Feature
+                {/* <Feature
                   icon={Sparkles}
                   text="Guides"
                   color="sky"
-                />
+                /> */}
 
               </div>
 
