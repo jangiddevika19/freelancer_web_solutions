@@ -950,7 +950,9 @@ export default function Contact() {
 
                 <div
                   className="
-                    overflow-hidden
+                    w-full
+                    overflow-x-auto
+                    overflow-y-hidden
                     rounded-xl
                     border
                     border-slate-200
@@ -961,7 +963,11 @@ export default function Contact() {
                 >
                   <div
                     ref={recaptchaRef}
-                    className="min-h-[78px]"
+                    className="
+                      min-h-[78px]
+                      w-[304px]
+                      max-w-none
+                    "
                   />
                 </div>
 

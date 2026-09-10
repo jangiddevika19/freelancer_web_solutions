@@ -2364,55 +2364,59 @@ function ResourceModal({ resource, onClose }) {
 
               {/* IMPORTANT PAYMENT NOTICE */}
 
-              <div
-                className="
-                  relative
-                  mt-3
-                  rounded-xl
-                  border
-                  border-amber-100
-                  bg-amber-50/70
-                  p-3
-                "
-              >
-                <div className="flex gap-2">
-                  <div
-                    className="
-                      mt-0.5
-                      flex
-                      h-5
-                      w-5
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-amber-100
-                      text-[10px]
-                      font-black
-                      text-amber-700
-                    "
-                  >
-                    !
-                  </div>
+<div
+  className="
+    relative
+    mt-3
+    rounded-xl
+    border
+    border-amber-100
+    bg-amber-50/70
+    p-3
+  "
+>
+  <div className="flex gap-2">
+    <div
+      className="
+        mt-0.5
+        flex
+        h-5
+        w-5
+        shrink-0
+        items-center
+        justify-center
+        rounded-full
+        bg-amber-100
+        text-[10px]
+        font-black
+        text-amber-700
+      "
+    >
+      !
+    </div>
 
-                  <div>
-                    <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
-                      Important before payment
-                    </p>
+    <div>
+      <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
+        Important before payment
+      </p>
 
-                    <p className="mt-1 text-[9px] leading-4 text-amber-800">
-                      Please make sure you have a valid email address.
-                      Your PDF/resource will be shared to the email you
-                      provide after successful payment verification.
-                    </p>
+      <p className="mt-1 text-[9px] leading-4 text-amber-800">
+        Please make sure you have a valid email address.
+        Your PDF/resource will be shared to the email you
+        provide after successful payment verification.
+      </p>
 
-                    <p className="mt-1 text-[9px] font-bold leading-4 text-amber-800">
-                      No refund is available after payment.
-                    </p>
-                  </div>
-                </div>
-              </div>
+      <p className="mt-1 text-[9px] font-bold leading-4 text-amber-800">
+        Resource will be delivered via email within 24 hours
+        after manual payment verification.
+      </p>
 
+      <p className="mt-1 text-[9px] font-bold leading-4 text-amber-800">
+        No refund is available after payment.
+      </p>
+    </div>
+  </div>
+</div>
               {/* PAYMENT BOX */}
 
               <div
