@@ -349,7 +349,7 @@ export default function Hero({ ready = true }) {
                 className="min-w-0"
               >
                 <p className="text-xl font-semibold text-slate-900 sm:text-2xl">
-                  760+
+                  786+
                 </p>
 
                 <p className="whitespace-nowrap text-[9px] text-slate-400 sm:text-xs">

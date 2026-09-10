@@ -27,6 +27,9 @@ import CustomNotes from "./pages/CustomNotes";
 // DEVELOPER QUIZ
 import Quiz from "./pages/Quiz";
 
+// ONLINE VISITORS
+import OnlineVisitors from "./components/OnlineVisitors";
+
 function App() {
   // Intro sirf fresh browser session me ek baar chalega
   const [showIntro, setShowIntro] = useState(() => {
@@ -329,6 +332,9 @@ function App() {
         </motion.span>
 
       </motion.a>
+
+      {/* ================= ONLINE VISITORS ================= */}
+      <OnlineVisitors />
 
       {/* ================= FOOTER ================= */}
       <Footer />
