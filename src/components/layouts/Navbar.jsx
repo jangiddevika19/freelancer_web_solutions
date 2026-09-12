@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Menu, X, ArrowRight } from "lucide-react";
 
@@ -5,6 +6,7 @@ const NAV_LINKS = [
   { label: "Home", href: "#home" },
   { label: "Services", href: "#services" },
   { label: "Portfolio", href: "#portfolio" },
+  { label: "Reviews", href: "#reviews" },
   { label: "Pricing", href: "#pricing" },
   { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },

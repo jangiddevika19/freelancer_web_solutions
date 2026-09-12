@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Sparkles, ArrowUpRight } from "lucide-react";
@@ -12,6 +13,10 @@ import Pricing from "./pages/Pricing";
 import About from "./pages/About";
 import Resources from "./pages/Resources";
 import Contact from "./pages/Contact";
+
+// REVIEWS
+import Reviews from "./components/Reviews";
+import ReviewPopup from "./components/ReviewPopup";
 
 import Footer from "./components/layouts/Footer";
 
@@ -44,6 +49,9 @@ function App() {
       <div className="min-h-screen bg-white">
         <ResourceHub />
 
+        {/* REVIEW POPUP */}
+        <ReviewPopup />
+
         {/* ONLINE VISITORS */}
         <OnlineVisitors />
       </div>
@@ -57,6 +65,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <CustomNotes />
+
+        {/* REVIEW POPUP */}
+        <ReviewPopup />
 
         {/* ONLINE VISITORS */}
         <OnlineVisitors />
@@ -72,6 +83,9 @@ function App() {
       <div className="min-h-screen bg-white">
         <Quiz />
 
+        {/* REVIEW POPUP */}
+        <ReviewPopup />
+
         {/* ONLINE VISITORS */}
         <OnlineVisitors />
       </div>
@@ -85,6 +99,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <Resources />
+
+        {/* REVIEW POPUP */}
+        <ReviewPopup />
 
         {/* ONLINE VISITORS */}
         <OnlineVisitors />
@@ -100,6 +117,9 @@ function App() {
       <div className="min-h-screen bg-white">
         <FreeResources />
 
+        {/* REVIEW POPUP */}
+        <ReviewPopup />
+
         {/* ONLINE VISITORS */}
         <OnlineVisitors />
       </div>
@@ -113,6 +133,9 @@ function App() {
     return (
       <div className="min-h-screen bg-white">
         <Contact />
+
+        {/* REVIEW POPUP */}
+        <ReviewPopup />
 
         {/* ONLINE VISITORS */}
         <OnlineVisitors />
@@ -134,7 +157,11 @@ function App() {
           <DevIntro
             key="dev-intro"
             onFinish={() => {
-              sessionStorage.setItem("devika_intro_seen", "true");
+              sessionStorage.setItem(
+                "devika_intro_seen",
+                "true"
+              );
+
               setShowIntro(false);
             }}
           />
@@ -158,6 +185,11 @@ function App() {
           <Portfolio />
         </section>
 
+        {/* ================= REVIEWS ================= */}
+        <section id="reviews">
+          <Reviews />
+        </section>
+
         {/* PRICING */}
         <section id="pricing">
           <Pricing />
@@ -173,6 +205,11 @@ function App() {
           <Contact />
         </section>
       </main>
+
+      {/* =================================================
+          REVIEW RATING POPUP
+      ================================================= */}
+      <ReviewPopup />
 
       {/* =================================================
           FLOATING RESOURCES BUTTON
