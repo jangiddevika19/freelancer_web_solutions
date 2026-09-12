@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Star, X, Send, MessageCircle } from "lucide-react";
 
@@ -8,8 +7,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // STORAGE KEYS
 // =====================================================
 
+// IMPORTANT:
+// Review submission is TAB-SPECIFIC.
+// sessionStorage = same tab me remember rahega,
+// new tab me fresh hoga.
 const REVIEW_SUBMITTED_KEY = "devika-review-submitted";
 
+// Reminder controls remain browser-level.
 const REVIEW_DISMISSED_KEY =
   "devika-review-dismissed";
 
@@ -48,12 +52,12 @@ export default function ReviewPopup() {
   const [error, setError] = useState("");
 
   // =====================================================
-  // CHECK REVIEW STATUS
+  // CHECK REVIEW STATUS - CURRENT TAB ONLY
   // =====================================================
 
   useEffect(() => {
     const alreadySubmitted =
-      localStorage.getItem(
+      sessionStorage.getItem(
         REVIEW_SUBMITTED_KEY
       );
 
@@ -67,10 +71,12 @@ export default function ReviewPopup() {
   // =====================================================
 
   useEffect(() => {
+    // If this tab already submitted a review,
+    // don't show the reminder.
     if (hasSubmittedReview) return;
 
     const submitted =
-      localStorage.getItem(
+      sessionStorage.getItem(
         REVIEW_SUBMITTED_KEY
       );
 
@@ -121,7 +127,7 @@ export default function ReviewPopup() {
 
     const timer = setTimeout(() => {
       const latestSubmitted =
-        localStorage.getItem(
+        sessionStorage.getItem(
           REVIEW_SUBMITTED_KEY
         );
 
@@ -240,19 +246,27 @@ export default function ReviewPopup() {
         );
       }
 
-      // Refresh reviews section
+      // =================================================
+      // REFRESH REVIEWS SECTION
+      // =================================================
+
       window.dispatchEvent(
         new CustomEvent(
           "review-submitted"
         )
       );
 
-      // Permanently remember review
-      localStorage.setItem(
+      // =================================================
+      // REMEMBER ONLY IN CURRENT TAB
+      // =================================================
+
+      sessionStorage.setItem(
         REVIEW_SUBMITTED_KEY,
         "true"
       );
 
+      // Reminder should not appear again
+      // in this browser.
       localStorage.setItem(
         REVIEW_DISMISSED_KEY,
         "true"
@@ -262,6 +276,9 @@ export default function ReviewPopup() {
         REVIEW_REMINDER_SHOWN_KEY,
         "true"
       );
+
+      // Hide Review button in current tab
+      setHasSubmittedReview(true);
 
       setSubmitted(true);
       setSubmitting(false);
@@ -283,7 +300,7 @@ export default function ReviewPopup() {
   // AFTER REVIEW SUBMISSION
   // =====================================================
 
-  if (hasSubmittedReview) {
+  if (hasSubmittedReview && !submitted) {
     return null;
   }
 
@@ -293,7 +310,7 @@ export default function ReviewPopup() {
           AUTOMATIC REVIEW REMINDER
       ================================================= */}
 
-      {showReminder && !isOpen && (
+      {showReminder && !isOpen && !hasSubmittedReview && (
         <div
           className="
             fixed
@@ -497,90 +514,87 @@ export default function ReviewPopup() {
           FLOATING REVIEW BUTTON
       ================================================= */}
 
-      {!isOpen && !showReminder && (
-        <button
-          type="button"
-          onClick={openReviewForm}
-          aria-label="Leave a review"
-          title="Leave a review"
-          className="
-            fixed
-            left-3
-            bottom-20
-            z-[55]
-
-            flex
-            items-center
-            gap-1.5
-
-            rounded-full
-            border
-            border-slate-200
-            bg-white
-
-            px-3
-            py-2
-
-            text-[11px]
-            font-semibold
-            text-slate-700
-
-            shadow-[0_8px_24px_rgba(15,23,42,0.14)]
-
-            transition-all
-            duration-300
-
-            hover:-translate-y-1
-            hover:border-sky-200
-            hover:text-sky-600
-            hover:shadow-[0_12px_28px_rgba(15,23,42,0.18)]
-
-            active:scale-95
-
-            sm:left-5
-            sm:bottom-20
-            sm:px-3.5
-            sm:py-2
-          "
-        >
-          <Star
+      {!isOpen &&
+        !showReminder &&
+        !hasSubmittedReview && (
+          <button
+            type="button"
+            onClick={openReviewForm}
+            aria-label="Leave a review"
+            title="Leave a review"
             className="
-              h-3.5
-              w-3.5
-              fill-sky-500
-              text-sky-500
+              fixed
+              left-3
+              bottom-20
+              z-[55]
 
-              sm:h-4
-              sm:w-4
+              flex
+              items-center
+              gap-1.5
+
+              rounded-full
+              border
+              border-slate-200
+              bg-white
+
+              px-3
+              py-2
+
+              text-[11px]
+              font-semibold
+              text-slate-700
+
+              shadow-[0_8px_24px_rgba(15,23,42,0.14)]
+
+              transition-all
+              duration-300
+
+              hover:-translate-y-1
+              hover:border-sky-200
+              hover:text-sky-600
+              hover:shadow-[0_12px_28px_rgba(15,23,42,0.18)]
+
+              active:scale-95
+
+              sm:left-5
+              sm:bottom-20
+              sm:px-3.5
+              sm:py-2
             "
-          />
+          >
+            <Star
+              className="
+                h-3.5
+                w-3.5
+                fill-sky-500
+                text-sky-500
 
-          <span>
-            Review
-          </span>
-        </button>
-      )}
+                sm:h-4
+                sm:w-4
+              "
+            />
+
+            <span>
+              Review
+            </span>
+          </button>
+        )}
 
       {/* =================================================
           REVIEW FORM
-          MOVED UP
       ================================================= */}
 
       {isOpen && !submitted && (
         <div
           className="
             fixed
-
-            /* MOBILE: form moved higher */
             bottom-[9.5rem]
-
             right-3
             z-[70]
 
             w-[calc(100%-1.5rem)]
             max-w-[290px]
 
-            /* DESKTOP */
             sm:right-5
             sm:bottom-[9rem]
             sm:max-w-[310px]
@@ -871,6 +885,7 @@ export default function ReviewPopup() {
             bottom-[9.5rem]
             right-3
             z-[70]
+
             w-[calc(100%-1.5rem)]
             max-w-[290px]
 
@@ -928,7 +943,7 @@ export default function ReviewPopup() {
               <button
                 type="button"
                 onClick={() => {
-                  setHasSubmittedReview(true);
+                  setSubmitted(false);
                   setIsOpen(false);
                 }}
                 aria-label="Close success message"
@@ -953,7 +968,7 @@ export default function ReviewPopup() {
             <button
               type="button"
               onClick={() => {
-                setHasSubmittedReview(true);
+                setSubmitted(false);
                 setIsOpen(false);
               }}
               className="
@@ -979,5 +994,3 @@ export default function ReviewPopup() {
     </>
   );
 }
-
-
