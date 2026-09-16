@@ -12,7 +12,7 @@ const SKILLS = [
 ];
 
 const STATS = [
-  { value: "760+", label: "LinkedIn followers" },
+  { value: "780+", label: "LinkedIn followers" },
   { value: "2+", label: "Years Learning Experience" },
   { value: "100%", label: "Responsive Solutions" },
 ];
