@@ -642,9 +642,9 @@ export default function Hero({ ready = true }) {
                 >
                   800+
                 </motion.span>
-                <span className="whitespace-nowrap text-[9px] text-slate-400 transition-colors group-hover:text-[#0A66C2] sm:text-xs">
-                  LinkedIn followers
-                </span>
+                 <span className="whitespace-nowrap text-[9px] text-slate-400 transition-colors group-hover:text-[#0A66C2] sm:text-xs">
+  LinkedIn followers ↗
+</span>
               </motion.a>
 
               <div className="h-8 w-px shrink-0 bg-slate-200" />
