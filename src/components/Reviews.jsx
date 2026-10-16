@@ -25,27 +25,45 @@ export default function Reviews() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
+  const [error, setError] = useState("");
 
   /* ==========================================================
      FETCH REVIEWS
   ========================================================== */
 
   const fetchReviews = useCallback(async () => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     try {
-      const response = await fetch(`${API_BASE_URL}/api/reviews`);
+      setError("");
+
+      const response = await fetch(`${API_BASE_URL}/api/reviews`, {
+        signal: controller.signal,
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to load reviews");
+        throw new Error(`Failed to load reviews (${response.status})`);
       }
 
       const data = await response.json();
 
-      setReviews(Array.isArray(data) ? data : []);
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid reviews response");
+      }
+
+      setReviews(data);
       setCurrentIndex(0);
-    } catch (error) {
-      console.error("Could not fetch reviews:", error);
+    } catch (err) {
+      console.error("Could not fetch reviews:", err);
       setReviews([]);
+      setError(
+        err.name === "AbortError"
+          ? "Reviews are taking too long to load. Please try again."
+          : "Unable to load reviews right now. Please try again."
+      );
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   }, []);
@@ -231,6 +249,33 @@ export default function Reviews() {
               <p className="mt-4 text-sm font-medium text-slate-500">
                 Loading client reviews...
               </p>
+
+            </div>
+
+          ) : error ? (
+
+            /* ==================================================
+               ERROR STATE
+            ================================================== */
+
+            <div className="mx-auto max-w-xl rounded-[28px] border border-slate-200 bg-white p-9 text-center shadow-sm">
+
+              <MessageSquare className="mx-auto h-8 w-8 text-sky-500" />
+
+              <p className="mt-4 text-sm text-slate-600">
+                {error}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setLoading(true);
+                  fetchReviews();
+                }}
+                className="mt-5 rounded-full bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600"
+              >
+                Try Again
+              </button>
 
             </div>
 
