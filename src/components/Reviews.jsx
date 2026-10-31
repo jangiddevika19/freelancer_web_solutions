@@ -700,6 +700,6 @@ export default function Reviews() {
         )}
 
       </div>
-    </section>
+    </section>  
   );
 }

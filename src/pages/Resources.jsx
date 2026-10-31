@@ -1421,7 +1421,26 @@ function ResourceModal({ resource, onClose }) {
           "Payment details could not be submitted."
         );
       }
+/* ---------------------------------------------------
+   2.5 SEND CUSTOMER CONFIRMATION EMAIL
+--------------------------------------------------- */
 
+try {
+  await emailjs.send(
+    "service_9q7p6i8",
+    "template_q3bv4qk",
+    {
+      name: customerName,
+      email: customerEmail,
+    },
+    "EmDSAw-my4X2iBE1m"
+  );
+} catch (confirmationEmailError) {
+  console.warn(
+    "Customer confirmation email could not be sent:",
+    confirmationEmailError
+  );
+}
       /* ---------------------------------------------------
          3. SAVE COOLDOWN
       --------------------------------------------------- */
