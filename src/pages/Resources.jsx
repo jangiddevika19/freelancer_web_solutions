@@ -1733,32 +1733,33 @@ try {
                 </div>
               </div>
 
-              {/* EMAIL / DELIVERY NOTICE */}
+             {/* EMAIL / DELIVERY NOTICE */}
 
-              <div
-                className="
-                  mt-4
-                  rounded-xl
-                  border
-                  border-amber-100
-                  bg-amber-50/70
-                  p-3
-                "
-              >
-                <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
-                  Important before submitting
-                </p>
+<div
+  className="
+    mt-4
+    rounded-xl
+    border
+    border-amber-100
+    bg-amber-50/70
+    p-3
+  "
+>
+  <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
+    Important before submitting
+  </p>
 
-                <p className="mt-1 text-[10px] leading-4 text-amber-800">
-                  Please provide a valid email address. Your PDF/resource
-                  will be shared to this email after successful payment
-                  verification.
-                </p>
+  <p className="mt-1 text-[10px] leading-4 text-amber-800">
+    Please provide a valid email address. After submitting your
+    payment details, you will receive a confirmation email at
+    your provided email address. Your PDF/resource will be
+    shared after successful payment verification.
+  </p>
 
-                <p className="mt-1.5 text-[10px] font-bold leading-4 text-amber-800">
-                  No refund is available after payment.
-                </p>
-              </div>
+  <p className="mt-1.5 text-[10px] font-bold leading-4 text-amber-800">
+    Please note: Payments are non-refundable once the payment is successfully completed.
+  </p>
+</div>
 
               {/* RESOURCE SUMMARY */}
 
@@ -2447,7 +2448,7 @@ try {
       </p>
 
       <p className="mt-1 text-[9px] font-bold leading-4 text-amber-800">
-        No refund is available after payment.
+        Please note: Payments are non-refundable once the payment is successfully completed.
       </p>
     </div>
   </div>
