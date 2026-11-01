@@ -872,57 +872,78 @@ function ResourceModal({ resource, onClose }) {
 
   const Icon = resource.icon;
 
+  // /* -------------------------------------------------------
+  //    DIRECT PAYMENT APPS
+  // ------------------------------------------------------- */
+
+  // const openPaymentApp = (app) => {
+  //   if (!FAMPAY_UPI_ID) {
+  //     setError(
+  //       "UPI payment is temporarily unavailable."
+  //     );
+  //     return;
+  //   }
+
+  //   if (
+  //     !resource?.amount ||
+  //     !resource?.title
+  //   ) {
+  //     setError(
+  //       "Payment details could not be loaded."
+  //     );
+  //     return;
+  //   }
+
+  //   const params =
+  //     `pa=${encodeURIComponent(FAMPAY_UPI_ID)}` +
+  //     `&pn=${encodeURIComponent("Devika Web Solutions")}` +
+  //     `&am=${encodeURIComponent(resource.amount)}` +
+  //     `&cu=INR` +
+  //     `&tn=${encodeURIComponent(
+  //       resource.title.slice(0, 60)
+  //     )}`;
+
+  //   const paymentUrls = {
+  //     phonepe: `phonepe://pay?${params}`,
+  //     googlepay: `tez://upi/pay?${params}`,
+  //     paytm: `paytmmp://pay?${params}`,
+  //   };
+
+  //   const paymentUrl =
+  //     paymentUrls[app];
+
+  //   if (!paymentUrl) {
+  //     setError(
+  //       "Selected payment app is not available."
+  //     );
+  //     return;
+  //   }
+
+  //   setError("");
+
+  //   window.location.href = paymentUrl;
+  // };
+
   /* -------------------------------------------------------
-     DIRECT PAYMENT APPS
-  ------------------------------------------------------- */
+   PAY VIA ANY UPI APP
+------------------------------------------------------- */
 
-  const openPaymentApp = (app) => {
-    if (!FAMPAY_UPI_ID) {
-      setError(
-        "UPI payment is temporarily unavailable."
-      );
-      return;
-    }
+const openAnyUPIApp = () => {
+  if (!FAMPAY_UPI_ID || !resource?.amount || !resource?.title) {
+    setError("Payment details are unavailable.");
+    return;
+  }
 
-    if (
-      !resource?.amount ||
-      !resource?.title
-    ) {
-      setError(
-        "Payment details could not be loaded."
-      );
-      return;
-    }
+  const params =
+    `pa=${encodeURIComponent(FAMPAY_UPI_ID)}` +
+    `&pn=${encodeURIComponent("Devika Web Solutions")}` +
+    `&am=${encodeURIComponent(resource.amount)}` +
+    `&cu=INR` +
+    `&tn=${encodeURIComponent(resource.title.slice(0, 60))}`;
 
-    const params =
-      `pa=${encodeURIComponent(FAMPAY_UPI_ID)}` +
-      `&pn=${encodeURIComponent("Devika Web Solutions")}` +
-      `&am=${encodeURIComponent(resource.amount)}` +
-      `&cu=INR` +
-      `&tn=${encodeURIComponent(
-        resource.title.slice(0, 60)
-      )}`;
-
-    const paymentUrls = {
-      phonepe: `phonepe://pay?${params}`,
-      googlepay: `tez://upi/pay?${params}`,
-      paytm: `paytmmp://pay?${params}`,
-    };
-
-    const paymentUrl =
-      paymentUrls[app];
-
-    if (!paymentUrl) {
-      setError(
-        "Selected payment app is not available."
-      );
-      return;
-    }
-
-    setError("");
-
-    window.location.href = paymentUrl;
-  };
+  setError("");
+  window.location.href = `upi://pay?${params}`;
+};
 
   /* -------------------------------------------------------
      PAYMENT COMPLETED
@@ -2488,183 +2509,93 @@ try {
 
                 {/* PAYMENT APPS */}
 
-                <div className="mt-3">
-                  <p className="mb-2 text-center text-[9px] font-semibold text-slate-500">
-                    Pay securely using your preferred UPI app
-                  </p>
+<div className="mt-3">
+  <p className="mb-2 text-center text-[9px] font-semibold text-slate-500">
+    Pay securely using your preferred UPI app
+  </p>
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openPaymentApp(
-                          "phonepe"
-                        )
-                      }
-                      className="
-                        flex
-                        min-h-[68px]
-                        flex-col
-                        items-center
-                        justify-center
-                        gap-1.5
-                        rounded-xl
-                        border
-                        border-purple-100
-                        bg-white
-                        px-2
-                        py-2
-                        shadow-sm
-                        transition-all
-                        hover:-translate-y-0.5
-                        hover:shadow-md
-                        active:scale-[0.97]
-                      "
-                    >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-[13px] font-black text-purple-700">
-                        P
-                      </div>
+  <button
+    type="button"
+    onClick={openAnyUPIApp}
+    className="
+  w-full
+  rounded-xl
+  bg-gradient-to-r
+  from-sky-600
+  to-blue-700
+  px-4
+  py-3
+  text-[11px]
+  font-bold
+  text-white
+  shadow-sm
+  transition
+  hover:from-sky-500
+  hover:to-blue-600
+  active:scale-[0.98]
+"
+  >
+    Pay via UPI App
+  </button>
+</div>
 
-                      <span className="text-[9px] font-bold text-slate-700">
-                        PhonePe
-                      </span>
-                    </button>
+{/* QR */}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openPaymentApp(
-                          "googlepay"
-                        )
-                      }
-                      className="
-                        flex
-                        min-h-[68px]
-                        flex-col
-                        items-center
-                        justify-center
-                        gap-1.5
-                        rounded-xl
-                        border
-                        border-blue-100
-                        bg-white
-                        px-2
-                        py-2
-                        shadow-sm
-                        transition-all
-                        hover:-translate-y-0.5
-                        hover:shadow-md
-                        active:scale-[0.97]
-                      "
-                    >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-[13px] font-black text-blue-600">
-                        G
-                      </div>
+<div
+  className="
+    mt-2.5
+    flex
+    flex-col
+    items-center
+    rounded-lg
+    border
+    border-slate-100
+    bg-white
+    p-2.5
+    shadow-sm
+  "
+>
+  <img
+    src="/payment-qr.png"
+    alt="UPI Payment QR"
+    className="
+      h-24
+      w-24
+      rounded-lg
+      object-contain
+      sm:h-28
+      sm:w-28
+    "
+  />
 
-                      <span className="text-[9px] font-bold text-slate-700">
-                        Google Pay
-                      </span>
-                    </button>
+  <p className="mt-1.5 text-[9px] font-semibold text-slate-500">
+    Or Scan &amp; Pay{" "}
+    {resource.price}
+  </p>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openPaymentApp(
-                          "paytm"
-                        )
-                      }
-                      className="
-                        flex
-                        min-h-[68px]
-                        flex-col
-                        items-center
-                        justify-center
-                        gap-1.5
-                        rounded-xl
-                        border
-                        border-sky-100
-                        bg-white
-                        px-2
-                        py-2
-                        shadow-sm
-                        transition-all
-                        hover:-translate-y-0.5
-                        hover:shadow-md
-                        active:scale-[0.97]
-                      "
-                    >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-[9px] font-black text-sky-600">
-                        PAY
-                      </div>
+  {/* <div
+    className="
+      mt-2
+      flex
+      max-w-full
+      items-center
+      gap-1.5
+      rounded-full
+      bg-slate-50
+      px-2.5
+      py-1.5
+      ring-1
+      ring-slate-100
+    "
+  >
+    <Smartphone className="h-3 w-3 shrink-0 text-sky-500" />
 
-                      <span className="text-[9px] font-bold text-slate-700">
-                        Paytm
-                      </span>
-                    </button>
-                  </div>
-
-                  <p className="mt-2 text-center text-[8px] leading-3 text-slate-400">
-                    Tap your preferred payment app to continue
-                  </p>
-                </div>
-
-                {/* QR */}
-
-                <div
-                  className="
-                    mt-2.5
-                    flex
-                    flex-col
-                    items-center
-                    rounded-lg
-                    border
-                    border-slate-100
-                    bg-white
-                    p-2.5
-                    shadow-sm
-                  "
-                >
-                  <img
-                    src="/payment-qr.png"
-                    alt="UPI Payment QR"
-                    className="
-                      h-24
-                      w-24
-                      rounded-lg
-                      object-contain
-                      sm:h-28
-                      sm:w-28
-                    "
-                  />
-
-                  <p className="mt-1.5 text-[9px] font-semibold text-slate-500">
-                    Or Scan &amp; Pay{" "}
-                    {resource.price}
-                  </p>
-
-                  {/* <div
-                    className="
-                      mt-2
-                      flex
-                      max-w-full
-                      items-center
-                      gap-1.5
-                      rounded-full
-                      bg-slate-50
-                      px-2.5
-                      py-1.5
-                      ring-1
-                      ring-slate-100
-                    "
-                  >
-                    <Smartphone className="h-3 w-3 shrink-0 text-sky-500" />
-
-                    <span className="truncate text-[8px] font-medium text-slate-500">
-                      UPI: {FAMPAY_UPI_ID}
-                    </span>
-                  </div> */}
-                </div>
-              </div>
+    <span className="truncate text-[8px] font-medium text-slate-500">
+      UPI: {FAMPAY_UPI_ID}
+    </span>
+  </div> */}
+</div>
+</div>
 
               {/* ERROR */}
 
