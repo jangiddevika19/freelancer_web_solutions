@@ -1,4 +1,6 @@
-import React from "react";
+
+import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -15,12 +17,70 @@ import {
   Sparkles,
   Target,
   Zap,
+  X,
 } from "lucide-react";
 
 import FREE_RESOURCES from "../data/freeResources";
 import Footer from "../components/layouts/Footer";
 
 const FreeResources = () => {
+  const [selectedResource, setSelectedResource] = useState(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
+  const [message, setMessage] = useState("");
+
+  // Open resource request form
+  const handleResourceRequest = (resource) => {
+    setSelectedResource(resource);
+    setName("");
+    setEmail("");
+    setMessage("");
+  };
+
+  // Close resource request form
+  const closeResourceForm = () => {
+    if (sending) return;
+
+    setSelectedResource(null);
+    setName("");
+    setEmail("");
+    setMessage("");
+  };
+
+  // Send selected resource through EmailJS
+  const handleSendResource = async (e) => {
+    e.preventDefault();
+
+    if (!selectedResource || sending) return;
+
+    setSending(true);
+    setMessage("");
+
+    try {
+      const resourceLink = `${window.location.origin}${selectedResource.file}`;
+
+      await emailjs.send(
+        "service_9q7p6i8",
+        "template_kt8tupc",
+        {
+          to_name: name.trim(),
+          to_email: email.trim(),
+          resource_title: selectedResource.title,
+          resource_link: resourceLink,
+        },
+        "EmDSAw-my4X2iBE1m"
+      );
+
+      setMessage("success");
+    } catch (error) {
+      console.error("Free Resource Email Error:", error);
+      setMessage("error");
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-slate-50 text-slate-900">
 
@@ -32,33 +92,26 @@ const FreeResources = () => {
           left-3
           top-4
           z-[100]
-
           inline-flex
           items-center
           gap-1.5
-
           rounded-xl
           border
           border-slate-200
           bg-white/95
           px-3
           py-2
-
           text-xs
           font-semibold
           text-slate-600
-
           shadow-[0_8px_25px_rgba(15,23,42,0.10)]
           backdrop-blur-xl
-
           transition-all
           duration-300
-
           hover:-translate-x-0.5
           hover:border-sky-200
           hover:bg-sky-50
           hover:text-sky-600
-
           sm:left-5
           sm:top-5
           sm:gap-2
@@ -248,15 +301,8 @@ const FreeResources = () => {
 
                 {/* Download Button */}
                 <button
-                  onClick={() => {
-                    if (resource.file) {
-                      window.open(
-                        resource.file,
-                        "_blank",
-                        "noopener,noreferrer"
-                      );
-                    }
-                  }}
+                  type="button"
+                  onClick={() => handleResourceRequest(resource)}
                   className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs font-bold text-white transition-all duration-300 hover:bg-sky-600 sm:mt-6 sm:px-5 sm:py-3.5 sm:text-sm"
                 >
                   <Download size={16} />
@@ -513,6 +559,202 @@ const FreeResources = () => {
         />
 
       </motion.a>
+
+      {/* ================= FREE RESOURCE EMAIL FORM ================= */}
+      {selectedResource && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/60 px-4 py-6 backdrop-blur-sm"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              closeResourceForm();
+            }
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="free-resource-form-title"
+            className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-7"
+          >
+
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={closeResourceForm}
+              disabled={sending}
+              aria-label="Close form"
+              className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-900 disabled:opacity-50"
+            >
+              <X size={18} />
+            </button>
+
+            {message === "success" ? (
+              /* ================= SUCCESS MESSAGE ================= */
+              <div className="py-5 text-center">
+
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                  <CheckCircle2 size={34} />
+                </div>
+
+                <h2 className="mt-5 text-2xl font-black text-slate-950">
+                  Email Sent Successfully!
+                </h2>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                  Your free resource has been sent to
+                  <span className="block break-all font-bold text-slate-800">
+                    {email}
+                  </span>
+                </p>
+
+                <p className="mt-2 text-xs text-slate-400">
+                  Please check your inbox and spam folder.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={closeResourceForm}
+                  className="mt-6 w-full rounded-xl bg-slate-900 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-sky-600"
+                >
+                  Done
+                </button>
+
+              </div>
+            ) : (
+              /* ================= REQUEST FORM ================= */
+              <>
+                <div className="mb-6 pr-8">
+
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-600">
+                    <Download size={23} />
+                  </div>
+
+                  <h2
+                    id="free-resource-form-title"
+                    className="text-2xl font-black tracking-tight text-slate-950"
+                  >
+                    Get Your Free Resource
+                  </h2>
+
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    Enter your details and we'll send the PDF link directly to your email.
+                  </p>
+
+                </div>
+
+                {/* Selected Resource */}
+                <div className="mb-5 flex items-start gap-3 rounded-xl border border-sky-100 bg-sky-50 p-3.5">
+
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-sky-600">
+                    <FileText size={20} />
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600">
+                      Selected Resource
+                    </p>
+
+                    <p className="mt-1 text-sm font-bold text-slate-800">
+                      {selectedResource.title}
+                    </p>
+                  </div>
+
+                </div>
+
+                <form onSubmit={handleSendResource} className="space-y-4">
+
+                  {/* Name */}
+                  <div>
+                    <label
+                      htmlFor="free-resource-name"
+                      className="mb-1.5 block text-sm font-semibold text-slate-700"
+                    >
+                      Your Name
+                    </label>
+
+                    <input
+                      id="free-resource-name"
+                      type="text"
+                      name="name"
+                      placeholder="Enter your full name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      maxLength={100}
+                      autoComplete="name"
+                      disabled={sending}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 disabled:bg-slate-50"
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label
+                      htmlFor="free-resource-email"
+                      className="mb-1.5 block text-sm font-semibold text-slate-700"
+                    >
+                      Email Address
+                    </label>
+
+                    <input
+                      id="free-resource-email"
+                      type="email"
+                      name="email"
+                      placeholder="Enter your email address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      maxLength={254}
+                      autoComplete="email"
+                      disabled={sending}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 disabled:bg-slate-50"
+                    />
+                  </div>
+
+                  {/* Error Message */}
+                  {message === "error" && (
+                    <div
+                      role="alert"
+                      className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm text-red-600"
+                    >
+                      Unable to send the resource right now. Please try again.
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={sending || !name.trim() || !email.trim()}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-slate-900/10 transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {sending ? (
+                      <>
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                        Sending Resource...
+                      </>
+                    ) : (
+                      <>
+                        <Download size={17} />
+                        Send Me the PDF
+                        <ArrowRight size={16} />
+                      </>
+                    )}
+                  </button>
+
+                  <p className="text-center text-[11px] leading-5 text-slate-400">
+                    Your resource link will be sent to the email address you provide.
+                  </p>
+
+                </form>
+              </>
+            )}
+
+          </motion.div>
+        </div>
+      )}
 
     </div>
   );
