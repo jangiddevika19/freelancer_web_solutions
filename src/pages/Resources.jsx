@@ -2642,7 +2642,7 @@ try {
                     {resource.price}
                   </p>
 
-                  <div
+                  {/* <div
                     className="
                       mt-2
                       flex
@@ -2662,7 +2662,7 @@ try {
                     <span className="truncate text-[8px] font-medium text-slate-500">
                       UPI: {FAMPAY_UPI_ID}
                     </span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
