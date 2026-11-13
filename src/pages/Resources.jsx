@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import emailjs from "@emailjs/browser";
 
@@ -47,6 +47,38 @@ const PAYMENT_COOLDOWN = 60 * 1000; // 1 minute
 
 const PAYMENT_COOLDOWN_KEY =
   "dws_payment_submission_cooldown";
+
+/* =========================================================
+   PAYMENT ORDER API
+========================================================= */
+
+const PAYMENT_API_BASE_URL = (
+  import.meta.env.VITE_PAYMENT_API_BASE_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  ""
+).replace(/\/+$/, "");
+
+const RESOURCE_CODES = {
+  18: "MERN-PRODUCTION-ARCH-KIT",
+  13: "REACT-INTERVIEW-10",
+  15: "MERN-INTERVIEW-10",
+  17: "PYTHON-INTERVIEW-10",
+  2: "SQL-CHEATSHEET",
+  1: "JAVA-QUICK-NOTES",
+  14: "REACT-INTERVIEW-20",
+  16: "MERN-INTERVIEW-20",
+  0: "DEVELOPER-HANDBOOK",
+  6: "JAVA-DEVELOPER-NOTES",
+  3: "JAVA-INTERVIEW-50",
+  10: "REACT-INTERVIEW-50",
+  4: "SQL-INTERVIEW-50",
+  5: "FRONTEND-ROADMAP",
+  7: "JAVA-FULLSTACK-ROADMAP",
+  8: "JAVA-INTERVIEW-PACK",
+  11: "REACT-PREMIUM-NOTES",
+  12: "MERN-PREMIUM-NOTES",
+  9: "JAVA-FULLSTACK-PACK",
+};
 
 /* =========================================================
    GOOGLE RECAPTCHA V2
@@ -116,6 +148,27 @@ const RESOURCE_CATEGORIES = [
 
 
 const RESOURCES = [
+
+  // =========================
+  // LIMITED-TIME LAUNCH OFFER
+  // =========================
+
+  {
+    id: 18,
+    icon: Layers3,
+    category: "notes",
+    tag: "LIMITED OFFER",
+    title: "MERN Production-Ready Architecture Kit",
+    description:
+      "A practical 15-page starter kit for React + Vite and Node.js + Express + MongoDB, covering project structure, API setup, environment configuration, error handling, security and production-readiness checks.",
+    level: "Beginner → Intermediate",
+    format: "15-Page PDF Architecture Kit",
+    price: "₹99",
+    amount: "99",
+    originalPrice: "₹199",
+    limitedOffer: true,
+    featured: true,
+  },
 
   // =========================
   // ₹99
@@ -469,7 +522,7 @@ function ResourceCard({ resource, onExplore }) {
       animate="visible"
       variants={fadeUp}
       whileHover={{ y: -7 }}
-      className="
+      className={`
         group
         relative
         flex
@@ -478,16 +531,18 @@ function ResourceCard({ resource, onExplore }) {
         overflow-hidden
         rounded-3xl
         border
-        border-slate-200
-        bg-white
+        ${
+          resource.limitedOffer
+            ? "border-amber-300 bg-gradient-to-br from-amber-50/80 via-white to-orange-50 shadow-[0_14px_40px_rgba(245,158,11,0.14)] ring-1 ring-amber-200/70"
+            : "border-slate-200 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.045)]"
+        }
         p-5
-        shadow-[0_8px_30px_rgba(15,23,42,0.045)]
-        transition-shadow
+        transition-all
         duration-300
         hover:border-sky-200
         hover:shadow-[0_24px_55px_rgba(14,165,233,0.12)]
         sm:p-6
-      "
+      `}
     >
       <div
         className="
@@ -533,24 +588,34 @@ function ResourceCard({ resource, onExplore }) {
           <Icon className="h-5 w-5" />
         </div>
 
-        <span
-          className="
-            rounded-full
-            border
-            border-slate-200
-            bg-slate-50
-            px-2.5
-            py-1.5
-            text-[9px]
-            font-bold
-            tracking-[0.12em]
-            text-slate-500
-            sm:px-3
-            sm:text-[10px]
-          "
-        >
-          {resource.tag}
-        </span>
+        {resource.limitedOffer ? (
+          <motion.span
+            animate={{ scale: [1, 1.045, 1] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            className="rounded-full border border-amber-300 bg-gradient-to-r from-amber-500 to-orange-500 px-2.5 py-1.5 text-center text-[8px] font-extrabold tracking-[0.1em] text-white shadow-[0_4px_14px_rgba(245,158,11,0.28)] sm:px-3 sm:text-[9px]"
+          >
+            ✨ LIMITED OFFER ✨
+          </motion.span>
+        ) : (
+          <span
+            className="
+              rounded-full
+              border
+              border-slate-200
+              bg-slate-50
+              px-2.5
+              py-1.5
+              text-[9px]
+              font-bold
+              tracking-[0.12em]
+              text-slate-500
+              sm:px-3
+              sm:text-[10px]
+            "
+          >
+            {resource.tag}
+          </span>
+        )}
       </div>
 
       <div className="relative mt-5 flex-1 sm:mt-6">
@@ -651,9 +716,16 @@ function ResourceCard({ resource, onExplore }) {
             Access
           </p>
 
-          <p className="mt-0.5 text-lg font-bold text-slate-900 sm:text-xl">
-            {resource.price}
-          </p>
+          <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
+            {resource.originalPrice && (
+              <span className="text-xs font-semibold text-slate-400 line-through">
+                {resource.originalPrice}
+              </span>
+            )}
+            <p className={`text-lg font-bold sm:text-xl ${resource.limitedOffer ? "text-amber-700" : "text-slate-900"}`}>
+              {resource.price}
+            </p>
+          </div>
         </div>
 
         <motion.button
@@ -693,9 +765,46 @@ function ResourceCard({ resource, onExplore }) {
    RESOURCE MODAL
 ========================================================= */
 
+const readSavedCheckout = (resourceId) => {
+  try {
+    const saved = sessionStorage.getItem(`dws_payment_checkout_${resourceId}`);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+};
+
 function ResourceModal({ resource, onClose }) {
-  const [paymentStep, setPaymentStep] =
-    useState("payment");
+  const [paymentStep, setPaymentStep] = useState(() => {
+    try {
+      return sessionStorage.getItem(`dws_payment_order_${resource?.id}`)
+        ? "payment"
+        : "details";
+    } catch {
+      return "details";
+    }
+  });
+
+  const [orderId, setOrderId] = useState(() => {
+    try {
+      const saved = readSavedCheckout(resource?.id);
+      return saved?.orderId || sessionStorage.getItem(`dws_payment_order_${resource?.id}`) || "";
+    } catch {
+      return "";
+    }
+  });
+  const [creatingOrder, setCreatingOrder] = useState(false);
+
+  const [customerName, setCustomerName] = useState(() =>
+    readSavedCheckout(resource?.id)?.customerName || ""
+  );
+
+  const [customerEmail, setCustomerEmail] = useState(() =>
+    readSavedCheckout(resource?.id)?.customerEmail || ""
+  );
+
+  const paymentAppPending = useRef(false);
+  const handleCompletedPaymentRef = useRef(null);
 
   const [paymentScreenshotName, setPaymentScreenshotName] =
     useState("");
@@ -713,8 +822,16 @@ function ResourceModal({ resource, onClose }) {
   const submissionLocked = useRef(false);
   const recaptchaRef = useRef(null);
   const recaptchaWidgetId = useRef(null);
+  const modalScrollRef = useRef(null);
   const [recaptchaReady, setRecaptchaReady] =
     useState(false);
+
+  // Reset the modal scroll synchronously after each step has rendered.
+  // This prevents the confirmation form from opening halfway down on mobile.
+  useLayoutEffect(() => {
+    const modal = modalScrollRef.current;
+    if (modal) modal.scrollTop = 0;
+  }, [paymentStep]);
 
   useEffect(() => {
   if (!RECAPTCHA_SITE_KEY) {
@@ -850,6 +967,7 @@ function ResourceModal({ resource, onClose }) {
   };
 }, []);
 
+
   const resetRecaptcha = () => {
     if (
       window.grecaptcha &&
@@ -928,11 +1046,146 @@ function ResourceModal({ resource, onClose }) {
    PAY VIA ANY UPI APP
 ------------------------------------------------------- */
 
+const createPaymentOrder = async () => {
+    if (creatingOrder) return;
+
+    const cleanName = customerName.trim().replace(/\s+/g, " ");
+    const cleanEmail = customerEmail.trim().toLowerCase();
+    const resourceCode = RESOURCE_CODES[resource?.id];
+
+    if (cleanName.length < 2 || cleanName.length > 80 || hasSuspiciousMarkup(cleanName)) {
+      setError("Please enter a valid name between 2 and 80 characters.");
+      return;
+    }
+
+    if (cleanEmail.length > 120 || !isValidEmail(cleanEmail)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!resourceCode) {
+      setError("This resource is not configured for online orders.");
+      return;
+    }
+
+    if (!PAYMENT_API_BASE_URL) {
+      setError("Payment backend URL is missing. Please configure VITE_API_BASE_URL in your frontend environment.");
+      return;
+    }
+
+    setCustomerName(cleanName);
+    setCustomerEmail(cleanEmail);
+    setCreatingOrder(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${PAYMENT_API_BASE_URL}/api/payment-orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerName: cleanName,
+          customerEmail: cleanEmail,
+          resourceCode,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.message || data?.error || "Could not create your payment order. Please try again.");
+      }
+
+      if (!data?.orderId) {
+        throw new Error("The payment backend did not return an order ID.");
+      }
+
+      const createdOrderId = String(data.orderId);
+      setOrderId(createdOrderId);
+
+      try {
+        sessionStorage.setItem(`dws_payment_order_${resource.id}`, createdOrderId);
+        sessionStorage.setItem(
+          `dws_payment_checkout_${resource.id}`,
+          JSON.stringify({
+            orderId: createdOrderId,
+            customerName: cleanName,
+            customerEmail: cleanEmail,
+            resourceId: resource.id,
+            savedAt: Date.now(),
+          })
+        );
+      } catch {
+        // Continue with in-memory order state if session storage is unavailable.
+      }
+
+      // Admin receives an order-created email; this does not mean payment is successful.
+      emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          resource_title: resource.title,
+          amount: resource.price,
+          subject: `New Resource Order Created - ${resource.title}`,
+          customer_name: cleanName,
+          customer_email: cleanEmail,
+          utr: "Not submitted yet",
+          payment_screenshot_url: "Pending payment",
+          message: "A new order has been created. Payment is awaiting customer confirmation.",
+          order_id: createdOrderId,
+          order_status: "PAYMENT_PENDING",
+        },
+        EMAILJS_PUBLIC_KEY
+      ).catch((adminEmailError) => {
+        console.warn("Order-created admin email could not be sent:", adminEmailError);
+      });
+
+      setPaymentStep("payment");
+      setError("");
+    } catch (err) {
+      console.error("Payment order creation failed:", err);
+      setError(err?.message || "Unable to start payment. Please try again.");
+    } finally {
+      setCreatingOrder(false);
+    }
+  };
+
+  /* -------------------------------------------------------
+   PAY VIA ANY UPI APP
+------------------------------------------------------- */
+
 const openAnyUPIApp = () => {
+  if (!orderId) {
+    setError("Please continue to payment first so your order can be created.");
+    return;
+  }
+
+  const cleanName = customerName.trim().replace(/\s+/g, " ");
+  const cleanEmail = customerEmail.trim().toLowerCase();
+
+  if (
+    cleanName.length < 2 ||
+    cleanName.length > 80 ||
+    hasSuspiciousMarkup(cleanName)
+  ) {
+    setError("Please enter a valid name before continuing to payment.");
+    return;
+  }
+
+  if (
+    cleanEmail.length > 120 ||
+    !isValidEmail(cleanEmail)
+  ) {
+    setError("Please enter a valid email address before continuing to payment.");
+    return;
+  }
+
   if (!FAMPAY_UPI_ID || !resource?.amount || !resource?.title) {
     setError("Payment details are unavailable.");
     return;
   }
+
+  setCustomerName(cleanName);
+  setCustomerEmail(cleanEmail);
 
   const params =
     `pa=${encodeURIComponent(FAMPAY_UPI_ID)}` +
@@ -942,6 +1195,7 @@ const openAnyUPIApp = () => {
     `&tn=${encodeURIComponent(resource.title.slice(0, 60))}`;
 
   setError("");
+  paymentAppPending.current = true;
   window.location.href = `upi://pay?${params}`;
 };
 
@@ -950,12 +1204,48 @@ const openAnyUPIApp = () => {
   ------------------------------------------------------- */
 
   const handleCompletedPayment = () => {
+    paymentAppPending.current = false;
+
+    // Restore the order and customer details saved when the order was created.
+    // Name/email were already validated before the backend created this order,
+    // so they must not block the transition to payment confirmation.
+    const savedCheckout = readSavedCheckout(resource.id);
+    let savedOrderId = savedCheckout?.orderId || "";
+
+    if (!savedOrderId) {
+      try {
+        savedOrderId =
+          sessionStorage.getItem(`dws_payment_order_${resource.id}`) || "";
+      } catch {
+        // Continue with the in-memory order ID if session storage is unavailable.
+      }
+    }
+
+    const activeOrderId = orderId || savedOrderId;
+
+    if (!activeOrderId) {
+      setError("Your payment order is missing. Please go back and continue again.");
+      return;
+    }
+
+    const cleanName = (customerName || savedCheckout?.customerName || "")
+      .trim()
+      .replace(/\s+/g, " ");
+    const cleanEmail = (customerEmail || savedCheckout?.customerEmail || "")
+      .trim()
+      .toLowerCase();
+
+    setOrderId(activeOrderId);
+    setCustomerName(cleanName);
+    setCustomerEmail(cleanEmail);
     setError("");
     setPaymentStep("confirmation");
 
     formOpenedAt.current = Date.now();
     submissionLocked.current = false;
   };
+
+  handleCompletedPaymentRef.current = handleCompletedPayment;
 
   /* -------------------------------------------------------
      VALIDATE REAL IMAGE
@@ -1398,70 +1688,84 @@ const openAnyUPIApp = () => {
         );
 
       /* ---------------------------------------------------
-         2. SEND PAYMENT DETAILS TO EMAILJS
+         2. SUBMIT UTR + SCREENSHOT TO PAYMENT ORDER API
       --------------------------------------------------- */
 
-      const response =
+      if (!orderId) {
+        throw new Error("Your payment order could not be found. Please contact support before submitting again.");
+      }
+
+      const orderResponse = await fetch(
+        `${PAYMENT_API_BASE_URL}/api/payment-orders/${encodeURIComponent(orderId)}/submit`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ utr, screenshotUrl }),
+        }
+      );
+
+      const orderResult = await orderResponse.json().catch(() => ({}));
+
+      if (!orderResponse.ok) {
+        throw new Error(
+          orderResult?.message ||
+          orderResult?.error ||
+          "Your payment proof could not be submitted. Please try again."
+        );
+      }
+
+      /* ---------------------------------------------------
+         3. SEND ADMIN NOTIFICATION EMAIL (BEST EFFORT)
+      --------------------------------------------------- */
+
+      try {
         await emailjs.send(
           EMAILJS_SERVICE_ID,
           EMAILJS_TEMPLATE_ID,
           {
-            resource_title:
-              verifiedResource.title,
-
-            amount:
-              verifiedResource.price,
-
-            subject:
-              `New Resource Payment Received - ${verifiedResource.title}`,
-
-            customer_name:
-              customerName,
-
-            customer_email:
-              customerEmail,
-
-            utr: utr,
-
-            payment_screenshot_url:
-              screenshotUrl,
-
-            message: message,
-
-            "g-recaptcha-response":
-              recaptchaToken,
+            resource_title: verifiedResource.title,
+            amount: verifiedResource.price,
+            subject: `New Resource Payment Received - ${verifiedResource.title}`,
+            customer_name: customerName,
+            customer_email: customerEmail,
+            utr,
+            payment_screenshot_url: screenshotUrl,
+            message,
+            order_id: orderId,
+            order_status: orderResult?.status || "SUBMITTED_FOR_VERIFICATION",
+            "g-recaptcha-response": recaptchaToken,
           },
           EMAILJS_PUBLIC_KEY
         );
+      } catch (adminEmailError) {
+        console.warn("Admin notification email could not be sent:", adminEmailError);
+      }
 
-      if (
-        !response ||
-        response.status !== 200
-      ) {
-        throw new Error(
-          "Payment details could not be submitted."
+      /* ---------------------------------------------------
+         3.5 SEND CUSTOMER ACKNOWLEDGEMENT EMAIL (BEST EFFORT)
+      --------------------------------------------------- */
+
+      try {
+        await emailjs.send(
+          "service_9q7p6i8",
+          "template_q3bv4qk",
+          {
+            name: customerName,
+            email: customerEmail,
+            resource_title: verifiedResource.title,
+            amount: verifiedResource.price,
+            order_id: orderId,
+            order_status: orderResult?.status || "SUBMITTED_FOR_VERIFICATION",
+          },
+          "EmDSAw-my4X2iBE1m"
+        );
+      } catch (confirmationEmailError) {
+        console.warn(
+          "Customer confirmation email could not be sent:",
+          confirmationEmailError
         );
       }
-/* ---------------------------------------------------
-   2.5 SEND CUSTOMER CONFIRMATION EMAIL
---------------------------------------------------- */
 
-try {
-  await emailjs.send(
-    "service_9q7p6i8",
-    "template_q3bv4qk",
-    {
-      name: customerName,
-      email: customerEmail,
-    },
-    "EmDSAw-my4X2iBE1m"
-  );
-} catch (confirmationEmailError) {
-  console.warn(
-    "Customer confirmation email could not be sent:",
-    confirmationEmailError
-  );
-}
       /* ---------------------------------------------------
          3. SAVE COOLDOWN
       --------------------------------------------------- */
@@ -1480,6 +1784,14 @@ try {
       --------------------------------------------------- */
 
       resetRecaptcha();
+
+      try {
+        sessionStorage.removeItem(`dws_payment_order_${resource.id}`);
+        sessionStorage.removeItem(`dws_payment_checkout_${resource.id}`);
+      } catch {
+        // Ignore session storage errors.
+      }
+
       setSubmitted(true);
     } catch (err) {
       console.error(
@@ -1513,12 +1825,13 @@ try {
           inset-0
           z-[100]
           flex
-          items-center
+          items-start
           justify-center
+          overflow-y-auto
           bg-slate-950/60
           px-3
           py-4
-          backdrop-blur-md
+          sm:items-center
         "
       >
         <motion.div
@@ -1544,12 +1857,17 @@ try {
           onClick={(event) =>
             event.stopPropagation()
           }
+          ref={modalScrollRef}
           className="
             relative
             w-full
             max-w-[360px]
-            max-h-[82vh]
+            max-h-[calc(100dvh-2rem)]
+            min-w-0
+            overflow-x-hidden
             overflow-y-auto
+            overscroll-contain
+            [-webkit-overflow-scrolling:touch]
             rounded-[22px]
             border
             border-white/80
@@ -1694,6 +2012,111 @@ try {
                 Done
               </button>
             </div>
+          ) : paymentStep === "details" ? (
+            /* =================================================
+               CUSTOMER DETAILS - FIRST STEP
+            ================================================= */
+
+            <div className="relative">
+              <div className="flex items-center gap-2.5 pr-8">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 text-white">
+                  <Icon className="h-4.5 w-4.5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-sky-600">
+                    Secure Resource Checkout · Step 1 of 3
+                  </p>
+                  <h2 className="mt-0.5 truncate text-base font-bold leading-tight text-slate-900">
+                    {resource.title}
+                  </h2>
+                </div>
+              </div>
+
+              <div className="mt-3 rounded-xl border border-sky-100 bg-sky-50/70 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-slate-400">
+                      Selected resource
+                    </p>
+                    <p className="mt-0.5 text-[10px] font-semibold text-slate-800">
+                      {resource.format}
+                    </p>
+                  </div>
+                  <p className="text-lg font-black text-sky-700">
+                    {resource.price}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-3 rounded-xl border border-amber-100 bg-amber-50/70 p-3">
+                <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-700">
+                  Before you continue
+                </p>
+                <p className="mt-1 text-[9px] leading-4 text-amber-800">
+                  Enter your name and email first. Your order will be saved securely before the QR code and UPI payment options appear.
+                </p>
+                <p className="mt-1 text-[9px] font-bold leading-4 text-amber-800">
+                  Your resource will be delivered by email after manual payment verification.
+                </p>
+              </div>
+
+              <div className="mt-3 space-y-2.5 rounded-xl border border-slate-200 bg-white p-3">
+                <div>
+                  <label className="mb-1 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(event) => setCustomerName(event.target.value)}
+                    maxLength={80}
+                    autoComplete="name"
+                    placeholder="Enter your name"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-[11px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    Valid Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={customerEmail}
+                    onChange={(event) => setCustomerEmail(event.target.value)}
+                    maxLength={120}
+                    autoComplete="email"
+                    placeholder="Enter your email"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-[11px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-50"
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="mt-2.5 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-[9px] leading-4 text-red-600">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={createPaymentOrder}
+                disabled={creatingOrder}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 py-3 text-[11px] font-bold text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)] transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {creatingOrder ? (
+                  <>
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    Creating your order...
+                  </>
+                ) : (
+                  <>
+                    Continue to Payment
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </>
+                )}
+              </button>
+            </div>
           ) : paymentStep === "confirmation" ? (
             /* =================================================
                CONFIRMATION FORM
@@ -1754,7 +2177,23 @@ try {
                 </div>
               </div>
 
-             {/* EMAIL / DELIVERY NOTICE */}
+             {/* SAVED CUSTOMER + ORDER DETAILS */}
+              <div className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50/70 p-3">
+                <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-700">
+                  Your details are already saved
+                </p>
+                <p className="mt-1 text-[10px] font-semibold text-slate-800">
+                  {customerName}
+                </p>
+                <p className="text-[9px] text-slate-600">
+                  {customerEmail}
+                </p>
+                <p className="mt-1 break-all text-[8px] text-slate-500">
+                  Order ID: {orderId}
+                </p>
+              </div>
+
+              {/* EMAIL / DELIVERY NOTICE */}
 
 <div
   className="
@@ -1771,10 +2210,7 @@ try {
   </p>
 
   <p className="mt-1 text-[10px] leading-4 text-amber-800">
-    Please provide a valid email address. After submitting your
-    payment details, you will receive a confirmation email at
-    your provided email address. Your PDF/resource will be
-    shared after successful payment verification.
+    Your confirmation email and resource delivery will be sent to the email address you entered before payment. Your PDF/resource will be shared after successful payment verification.
   </p>
 
   <p className="mt-1.5 text-[10px] font-bold leading-4 text-amber-800">
@@ -1881,78 +2317,19 @@ try {
                   readOnly
                 />
 
-                {/* NAME */}
+                {/* CUSTOMER DETAILS COLLECTED BEFORE PAYMENT */}
 
-                <div>
-                  <label className="mb-1 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                    Your Name
-                  </label>
+                <input
+                  type="hidden"
+                  name="customer_name"
+                  value={customerName}
+                />
 
-                  <input
-                    name="customer_name"
-                    type="text"
-                    required
-                    maxLength={80}
-                    autoComplete="name"
-                    placeholder="Enter your name"
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-[11px]
-                      text-slate-800
-                      outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-sky-300
-                      focus:ring-4
-                      focus:ring-sky-50
-                    "
-                  />
-                </div>
-
-                {/* EMAIL */}
-
-                <div>
-                  <label className="mb-1 block text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                    Valid Email Address
-                  </label>
-
-                  <input
-                    name="customer_email"
-                    type="email"
-                    required
-                    maxLength={120}
-                    autoComplete="email"
-                    placeholder="Enter your email"
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-[11px]
-                      text-slate-800
-                      outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-sky-300
-                      focus:ring-4
-                      focus:ring-sky-50
-                    "
-                  />
-
-                  <p className="mt-1 text-[8px] leading-3.5 text-slate-400">
-                    Your PDF/resource will be shared to this email after
-                    payment verification. Please make sure it is correct.
-                  </p>
-                </div>
+                <input
+                  type="hidden"
+                  name="customer_email"
+                  value={customerEmail}
+                />
 
                 {/* UTR */}
 
@@ -2189,9 +2566,15 @@ try {
                     name="message"
                     rows={2}
                     maxLength={500}
+                    autoComplete="off"
                     placeholder="Optional message..."
                     className="
+                      box-border
+                      block
+                      min-w-0
+                      max-w-full
                       w-full
+                      overflow-x-hidden
                       resize-none
                       rounded-lg
                       border
@@ -2474,6 +2857,23 @@ try {
     </div>
   </div>
 </div>
+              {/* CUSTOMER DETAILS ALREADY SAVED WITH ORDER */}
+
+              <div className="relative mt-3 rounded-xl border border-emerald-100 bg-emerald-50/70 p-3">
+                <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-emerald-700">
+                  Order created successfully
+                </p>
+                <p className="mt-1 text-[10px] font-semibold text-slate-800">
+                  {customerName}
+                </p>
+                <p className="text-[9px] text-slate-500">
+                  {customerEmail}
+                </p>
+                <p className="mt-1 text-[8px] text-slate-400">
+                  Order ID: {orderId}
+                </p>
+              </div>
+
               {/* PAYMENT BOX */}
 
               <div
@@ -2511,7 +2911,7 @@ try {
 
 <div className="mt-3">
   <p className="mb-2 text-center text-[9px] font-semibold text-slate-500">
-    Pay securely using your preferred UPI app
+    Step 1 · Pay using your preferred UPI app or scan the QR code
   </p>
 
   <button
@@ -2535,7 +2935,7 @@ try {
   active:scale-[0.98]
 "
   >
-    Pay via UPI App
+    Open UPI Payment App
   </button>
 </div>
 
@@ -2646,7 +3046,7 @@ try {
                     hover:bg-sky-600
                   "
                 >
-                  I've Completed Payment
+                  I've Completed Payment – Fill Details
 
                   <ArrowRight
                     className="
@@ -2660,8 +3060,7 @@ try {
               </div>
 
               <p className="relative mt-2 text-center text-[8px] leading-3.5 text-slate-400">
-                After payment, submit your transaction ID / UTR and a
-                valid email address for verification and delivery.
+                Return to this page after completing payment. Tap “I've Completed Payment – Fill Details”, then enter your UTR and upload the payment screenshot. Your name, email and Order ID are already saved, so you do not need to enter them again.
               </p>
             </>
           )}
