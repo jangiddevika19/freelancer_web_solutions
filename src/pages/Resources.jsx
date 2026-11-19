@@ -59,6 +59,7 @@ const PAYMENT_API_BASE_URL = (
 ).replace(/\/+$/, "");
 
 const RESOURCE_CODES = {
+  19: "HR-INTERVIEW-40",
   18: "MERN-PRODUCTION-ARCH-KIT",
   13: "REACT-INTERVIEW-10",
   15: "MERN-INTERVIEW-10",
@@ -156,6 +157,7 @@ const RESOURCES = [
   category: "interview",
   tag: "LIMITED OFFER",
   title: "40 Most Asked HR Interview Questions & Answers",
+  resourceCode: "HR-INTERVIEW-40",
   description:
     "A professional interview preparation guide for freshers featuring 40 commonly asked HR interview questions with practical sample answers, interview tips, self-introduction guidance, preparation checklists, common interview mistakes and 5 bonus chapters.",
   level: "Fresher Interview Preparation",
