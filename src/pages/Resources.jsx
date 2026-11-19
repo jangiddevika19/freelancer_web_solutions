@@ -149,6 +149,25 @@ const RESOURCE_CATEGORIES = [
 
 const RESOURCES = [
 
+
+{
+  id: 19,
+  icon: BriefcaseBusiness,
+  category: "interview",
+  tag: "LIMITED OFFER",
+  title: "40 Most Asked HR Interview Questions & Answers",
+  description:
+    "A professional interview preparation guide for freshers featuring 40 commonly asked HR interview questions with practical sample answers, interview tips, self-introduction guidance, preparation checklists, common interview mistakes and 5 bonus chapters.",
+  level: "Fresher Interview Preparation",
+  format: "37-Page Professional PDF Ebook",
+  price: "₹99",
+  amount: "99",
+  originalPrice: "₹199",
+  limitedOffer: true,
+  featured: true,
+},
+
+
   // =========================
   // LIMITED-TIME LAUNCH OFFER
   // =========================
