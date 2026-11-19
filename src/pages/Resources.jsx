@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import emailjs from "@emailjs/browser";
+import { QRCodeSVG } from "qrcode.react";
 
 import {
   ArrowLeft,
@@ -815,6 +816,17 @@ function ResourceModal({ resource, onClose }) {
     }
   });
   const [creatingOrder, setCreatingOrder] = useState(false);
+
+  // Build a standard UPI QR for the currently selected resource and its exact amount.
+  const dynamicUpiQR = `upi://pay?pa=${encodeURIComponent(
+    FAMPAY_UPI_ID
+  )}&pn=${encodeURIComponent(
+    "Devika Web Solutions"
+  )}&am=${encodeURIComponent(
+    resource.amount
+  )}&cu=INR&tn=${encodeURIComponent(
+    resource.title.slice(0, 60)
+  )}`;
 
   const [customerName, setCustomerName] = useState(() =>
     readSavedCheckout(resource?.id)?.customerName || ""
@@ -2960,7 +2972,7 @@ const openAnyUPIApp = () => {
   </button>
 </div>
 
-{/* QR */}
+{/* DYNAMIC UPI QR */}
 
 <div
   className="
@@ -2976,45 +2988,26 @@ const openAnyUPIApp = () => {
     shadow-sm
   "
 >
-  <img
-    src="/payment-qr.png"
-    alt="UPI Payment QR"
-    className="
-      h-24
-      w-24
-      rounded-lg
-      object-contain
-      sm:h-28
-      sm:w-28
-    "
+  <QRCodeSVG
+    value={dynamicUpiQR}
+    size={160}
+    level="H"
+    includeMargin={true}
+    bgColor="#FFFFFF"
+    fgColor="#000000"
   />
 
   <p className="mt-1.5 text-[9px] font-semibold text-slate-500">
-    Or Scan &amp; Pay{" "}
-    {resource.price}
+    Or Scan &amp; Pay {resource.price}
   </p>
 
-  {/* <div
-    className="
-      mt-2
-      flex
-      max-w-full
-      items-center
-      gap-1.5
-      rounded-full
-      bg-slate-50
-      px-2.5
-      py-1.5
-      ring-1
-      ring-slate-100
-    "
-  >
-    <Smartphone className="h-3 w-3 shrink-0 text-sky-500" />
+  <p className="mt-1 text-[9px] font-medium text-slate-400">
+    UPI ID: {FAMPAY_UPI_ID}
+  </p>
 
-    <span className="truncate text-[8px] font-medium text-slate-500">
-      UPI: {FAMPAY_UPI_ID}
-    </span>
-  </div> */}
+  <p className="mt-1 text-center text-[8px] text-slate-400">
+    Scan using Google Pay, PhonePe, Paytm or any compatible UPI app.
+  </p>
 </div>
 </div>
 
