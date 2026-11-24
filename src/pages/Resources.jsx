@@ -60,6 +60,7 @@ const PAYMENT_API_BASE_URL = (
 ).replace(/\/+$/, "");
 
 const RESOURCE_CODES = {
+  20: "DWS-MERN-INTERVIEW-100",
   19: "HR-INTERVIEW-40",
   18: "MERN-PRODUCTION-ARCH-KIT",
   13: "REACT-INTERVIEW-10",
@@ -150,6 +151,25 @@ const RESOURCE_CATEGORIES = [
 
 
 const RESOURCES = [
+
+  {
+    id: 20,
+    icon: BriefcaseBusiness,
+    category: "interview",
+    tag: "LIMITED OFFER",
+    title: "MERN Stack Interview Questions - Complete Preparation Pack",
+    resourceCode: "DWS-MERN-INTERVIEW-100",
+    description:
+      "A complete MERN Stack interview preparation pack with 100 questions covering MongoDB, Express.js, React.js, Node.js, MERN architecture, practical concepts and scenario-based interview preparation.",
+    level: "Beginner → Intermediate",
+    format: "81-Page PDF Ebook · 100 Questions",
+    price: "₹99",
+    amount: "99",
+    originalPrice: "₹249",
+    limitedOffer: true,
+    featured: true,
+  },
+
 
 
 {
